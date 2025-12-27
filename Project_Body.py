@@ -37,4 +37,18 @@ zombie_angles = [0, 90, 180, 270]
 zombie_speed = 1
 zombie_radius = 120
 
+# Cheese positions
+cheese_positions = [[-500, -500, 22], [500, -500, 22], [500, 500, 22], [-500, 500, 22]]  # 1.5x larger
+cheese_active = [True, True, True, True]
+cheese_respawn_timers = [0, 0, 0, 0]
 
+# Falling diamonds system with breathing effect - MODIFIED DURATION
+falling_diamonds = []
+diamond_spawn_timer = 0
+diamond_spawn_interval = 3
+diamond_collected = 0
+max_diamonds = 3
+diamond_base_size = 25  # Increased base size for better visibility
+diamond_fall_duration = 5  # Diamond stays for 3.5 seconds (3-4 sec range)
+diamond_pulse = 5.0  # Added fattening effect like code 2
+elapsed_time = 0.0  # Added elapsed time for diamond pulse
