@@ -19,3 +19,11 @@ enemies_distracted = False
 
 
 print(10+10)
+# Game state variables
+jerry_pos = [0, 0, 30]  # 1.5x larger (was 20)
+jerry_angle = 0
+jerry_lives = 10
+jerry_speed = 8
+jerry_score = 0
+is_dead = False  # Added death state like code 2
+
