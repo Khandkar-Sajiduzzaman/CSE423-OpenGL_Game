@@ -9,3 +9,6 @@ print("new rafi")
 print("rafi was here")
 print ("rafi was NO here")
 print("YASIN WAS HERE")
+
+
+print(10+10)
