@@ -27,6 +27,14 @@ jerry_score = 0
 is_dead = False  # Added death state like code 2
 
 
+# Two Toms system - slower speed
+tom_positions = [[300, 300, 30], [-300, -300, 30]]  # 1.5x larger
+tom_speed = 1  # Same as first code
 
+# Zombies guard cheese in corners
+zombie_positions = [[-600, -600, 30], [600, -600, 30], [600, 600, 30], [-600, 600, 30]]  # 1.5x larger
+zombie_angles = [0, 90, 180, 270]
+zombie_speed = 1
+zombie_radius = 120
 
 
