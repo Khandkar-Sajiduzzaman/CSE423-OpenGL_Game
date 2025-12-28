@@ -979,4 +979,250 @@ def draw_boundary_walls():
 
 
 
+def draw_sky():
+    """Draw vibrant daytime sky with gradient and clouds."""
+    # Disable depth testing for sky to ensure it's in background
+    glDisable(GL_DEPTH_TEST)
+    
+    # Vibrant daytime sky gradient - from bright blue at top to light cyan at horizon
+    glBegin(GL_QUADS)
+    # Top - bright blue
+    glColor3f(0.4, 0.7, 1.0)  # Bright sky blue
+    glVertex3f(-BOUNDARY_SIZE * 2, -BOUNDARY_SIZE * 2, 2500)
+    glVertex3f(BOUNDARY_SIZE * 2, -BOUNDARY_SIZE * 2, 2500)
+    # Upper middle - light blue
+    glColor3f(0.6, 0.85, 1.0)  # Light sky blue
+    glVertex3f(BOUNDARY_SIZE * 2, BOUNDARY_SIZE * 2, 1800)
+    glVertex3f(-BOUNDARY_SIZE * 2, BOUNDARY_SIZE * 2, 1800)
+    glEnd()
+    
+    glBegin(GL_QUADS)
+    # Lower middle - very light blue
+    glColor3f(0.7, 0.9, 1.0)  # Very light blue
+    glVertex3f(-BOUNDARY_SIZE * 2, -BOUNDARY_SIZE * 2, 1800)
+    glVertex3f(BOUNDARY_SIZE * 2, -BOUNDARY_SIZE * 2, 1800)
+    # Horizon - light cyan/white
+    glColor3f(0.85, 0.95, 1.0)  # Near white with blue tint
+    glVertex3f(BOUNDARY_SIZE * 2, BOUNDARY_SIZE * 2, 300)
+    glVertex3f(-BOUNDARY_SIZE * 2, BOUNDARY_SIZE * 2, 300)
+    glEnd()
+    
+    # Bright sun - daytime version
+    glEnable(GL_DEPTH_TEST)
+    glPushMatrix()
+    glTranslatef(BOUNDARY_SIZE * 0.6, BOUNDARY_SIZE * 0.6, 1800)  # Position in sky
+    glColor3f(1.0, 0.98, 0.7)  # Bright yellow sun
+    glutSolidSphere(120, 24, 24)  # Larger, brighter sun
+    glPopMatrix()
+    glDisable(GL_DEPTH_TEST)
+    
+    # Fluffy white clouds for daytime
+    glColor3f(1.0, 1.0, 1.0)  # Pure white clouds
+    cloud_positions = [
+        (BOUNDARY_SIZE * 0.4, BOUNDARY_SIZE * 0.4, 1500),
+        (-BOUNDARY_SIZE * 0.3, BOUNDARY_SIZE * 0.7, 1400),
+        (BOUNDARY_SIZE * 0.5, -BOUNDARY_SIZE * 0.4, 1300),
+        (-BOUNDARY_SIZE * 0.7, -BOUNDARY_SIZE * 0.2, 1200),
+        (BOUNDARY_SIZE * 0.8, BOUNDARY_SIZE * 0.8, 1600),
+        (-BOUNDARY_SIZE * 0.6, BOUNDARY_SIZE * 0.9, 1450),
+    ]
+    
+    for cx, cy, cz in cloud_positions:
+        glPushMatrix()
+        glTranslatef(cx, cy, cz)
+        for i in range(6):  # More cloud particles
+            glPushMatrix()
+            glTranslatef(random.uniform(-50, 50), random.uniform(-35, 35), random.uniform(-20, 20))
+            glutSolidSphere(random.uniform(50, 90), 12, 12)  # Larger, fluffier clouds
+            glPopMatrix()
+        glPopMatrix()
+    
+    glEnable(GL_DEPTH_TEST)
+
+def draw_health_bar():
+    """Draw health bar on top of screen with 5 distinct colored segments."""
+    # Background for the entire bar
+    glColor3f(0.3, 0.3, 0.3)
+    glBegin(GL_QUADS)
+    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 60)
+    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 60)
+    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 30)
+    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 30)
+    glEnd()
+    
+    # Draw 5 distinct segments
+    segment_width = 50
+    spacing = 5
+    total_width = 5 * segment_width + 4 * spacing
+    
+    # Start position (centered)
+    start_x = WINDOW_WIDTH//2 - total_width//2
+    
+    for i in range(max_health):
+        segment_x = start_x + i * (segment_width + spacing)
+        segment_y = WINDOW_HEIGHT - 55
+        
+        if i < player_health:
+            glColor3f(*HEALTH_COLORS[i])
+        else:
+            glColor3f(0.1, 0.1, 0.1)  # Dark gray for empty segment
+        
+        glBegin(GL_QUADS)
+        glVertex2f(segment_x, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y + 20)
+        glVertex2f(segment_x, segment_y + 20)
+        glEnd()
+        
+        # Draw segment border
+        glColor3f(0.8, 0.8, 0.8)
+        glLineWidth(1)
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(segment_x, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y + 20)
+        glVertex2f(segment_x, segment_y + 20)
+        glEnd()
+
+def draw_dash_indicator():
+    """Draw dash mode indicator."""
+    if dash_timer > 0:
+        glColor4f(0.5, 0.8, 0.0, 0.5)  # Semi-transparent dash color
+        glBegin(GL_QUADS)
+        glVertex2f(WINDOW_WIDTH//2 - 200, 30)
+        glVertex2f(WINDOW_WIDTH//2 - 200 + 400 * (dash_timer / dash_duration), 30)
+        glVertex2f(WINDOW_WIDTH//2 - 200 + 400 * (dash_timer / dash_duration), 50)
+        glVertex2f(WINDOW_WIDTH//2 - 200, 50)
+        glEnd()
+        
+        glColor3f(1.0, 1.0, 1.0)
+        draw_text(WINDOW_WIDTH//2 - 100, 15, "DASH ACTIVE")
+    elif dash_cooldown > 0:
+        glColor4f(1.0, 0.5, 0.0, 0.5)  # Semi-transparent cooldown color
+        glBegin(GL_QUADS)
+        glVertex2f(WINDOW_WIDTH//2 - 200, 30)
+        glVertex2f(WINDOW_WIDTH//2 - 200 + 400 * (1 - dash_cooldown / dash_cooldown_duration), 30)
+        glVertex2f(WINDOW_WIDTH//2 - 200 + 400 * (1 - dash_cooldown / dash_cooldown_duration), 50)
+        glVertex2f(WINDOW_WIDTH//2 - 200, 50)
+        glEnd()
+        
+        glColor3f(1.0, 1.0, 1.0)
+        draw_text(WINDOW_WIDTH//2 - 100, 15, "DASH COOLDOWN")
+
+def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18):
+    """Draw text at screen coordinates."""
+    glColor3f(1, 1, 1)
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT)
+    
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    
+    glRasterPos2f(x, y)
+    for ch in text:
+        glutBitmapCharacter(font, ord(ch))
+    
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+
+def draw_pause_overlay():
+    """Draw pause overlay screen."""
+    glColor4f(0.1, 0.1, 0.1, 0.7)
+    glBegin(GL_QUADS)
+    glVertex2f(0, 0)
+    glVertex2f(WINDOW_WIDTH, 0)
+    glVertex2f(WINDOW_WIDTH, WINDOW_HEIGHT)
+    glVertex2f(0, WINDOW_HEIGHT)
+    glEnd()
+    
+    draw_text(WINDOW_WIDTH//2 - 80, WINDOW_HEIGHT//2 + 50, "GAME PAUSED", GLUT_BITMAP_TIMES_ROMAN_24)
+    draw_text(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2 - 20, "Press SPACE to Resume")
+    draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 - 60, f"Score: {player_score}")
+    draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 - 100, f"Health: {player_health}/{max_health}")
+
+def draw_minimap():
+    """Draw a minimap."""
+    map_size = 200
+    map_pos = [WINDOW_WIDTH - map_size - 20, 20]
+    
+    glColor4f(0.1, 0.1, 0.1, 0.7)
+    glBegin(GL_QUADS)
+    glVertex2f(map_pos[0], map_pos[1])
+    glVertex2f(map_pos[0] + map_size, map_pos[1])
+    glVertex2f(map_pos[0] + map_size, map_pos[1] + map_size)
+    glVertex2f(map_pos[0], map_pos[1] + map_size)
+    glEnd()
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glLineWidth(2)
+    glBegin(GL_LINE_LOOP)
+    glVertex2f(map_pos[0], map_pos[1])
+    glVertex2f(map_pos[0] + map_size, map_pos[1])
+    glVertex2f(map_pos[0] + map_size, map_pos[1] + map_size)
+    glVertex2f(map_pos[0], map_pos[1] + map_size)
+    glEnd()
+    
+    player_map_x = map_pos[0] + (player_pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+    player_map_y = map_pos[1] + (player_pos[1] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+    
+    player_map_x = max(map_pos[0] + 2, min(player_map_x, map_pos[0] + map_size - 2))
+    player_map_y = max(map_pos[1] + 2, min(player_map_y, map_pos[1] + map_size - 2))
+    
+    glColor3f(0.0, 1.0, 0.0)
+    glPushMatrix()
+    glTranslatef(player_map_x, player_map_y, 0)
+    glRotatef(player_angle, 0, 0, 1)
+    glBegin(GL_TRIANGLES)
+    glVertex2f(0, 5)
+    glVertex2f(-3, -3)
+    glVertex2f(3, -3)
+    glEnd()
+    glPopMatrix()
+    
+    for enemy in enemies:
+        if enemy.alive:
+            enemy_map_x = map_pos[0] + (enemy.pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            enemy_map_y = map_pos[1] + (enemy.pos[1] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            
+            if (map_pos[0] <= enemy_map_x <= map_pos[0] + map_size and
+                map_pos[1] <= enemy_map_y <= map_pos[1] + map_size):
+                
+                if enemy.type == 0:
+                    glColor3f(1.0, 0.0, 0.0)  # Red for stationary
+                elif enemy.type == 1:
+                    glColor3f(0.8, 0.6, 0.4)  # Brown for giant
+                else:
+                    glColor3f(0.4, 0.8, 0.2)  # Green for dinosaur
+                
+                glPointSize(4)
+                glBegin(GL_POINTS)
+                glVertex2f(enemy_map_x, enemy_map_y)
+                glEnd()
+
+# ==================== UPDATE FUNCTIONS ====================
+def update_dash_mode():
+    """Update dash mode timer and cooldown."""
+    global dash_timer, dash_mode, dash_cooldown
+    
+    current_time = time.time()
+    
+    if dash_timer > 0:
+        dash_timer -= 0.016  # Assuming 60 FPS
+        if dash_timer <= 0:
+            dash_mode = False
+            dash_timer = 0
+    
+    if dash_cooldown > 0:
+        dash_cooldown -= 0.016
+        if dash_cooldown <= 0:
+            dash_cooldown = 0
+
+
+
+
 
