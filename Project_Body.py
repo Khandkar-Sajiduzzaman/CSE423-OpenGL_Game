@@ -129,5 +129,56 @@ last_chasing_spawn = time.time()
 chasing_spawn_interval = 10  # Spawn a new dinosaur every 10 seconds
 
 
+# ==================== DIAMONDS SYSTEM ====================
+class Diamond:
+    def __init__(self, pos, diamond_type=0):
+        self.pos = pos.copy()
+        self.type = diamond_type
+        self.fall_speed = random.uniform(15, 25)
+        self.collected = False
+        self.spawn_time = time.time()
+        self.radius = 75
+        self.pulse = 0.0
+        self.pulse_speed = 5.0
+        self.on_ground = False
+        self.ground_time = 0
+        self.glitter_particles = []
+        
+        if diamond_type == 0:
+            self.color = (0.0, 1.0, 1.0)  # Cyan
+        else:
+            self.color = (1.0, 0.84, 0.0)  # Golden
+            
+        if diamond_type == 1:
+            for _ in range(20):
+                self.glitter_particles.append({
+                    'pos': [0, 0, 0],
+                    'vel': [random.uniform(-5, 5), random.uniform(-5, 5), random.uniform(2, 8)],
+                    'size': random.uniform(2, 5),
+                    'life': random.uniform(0.5, 1.5)
+                })
+
+# ==================== BULLETS SYSTEM ====================
+class Bullet:
+    def __init__(self, pos, angle, bullet_type=0):
+        # Bullet comes from gun direction
+        self.pos = pos.copy()
+        self.angle = angle
+        self.type = bullet_type
+        self.speed = 40 if bullet_type == 0 else 25
+        self.radius = 8
+        self.alive = True
+        self.distance_traveled = 0
+        self.max_distance = 800
+        
+        if bullet_type == 0:
+            self.color = (1.0, 1.0, 0.0)  # Yellow
+            self.trail = []
+        else:
+            self.color = (1.0, 0.5, 0.0)  # Orange
+
+bullets = []
+
+
 
 
