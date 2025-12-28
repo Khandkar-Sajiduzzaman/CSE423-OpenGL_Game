@@ -1460,7 +1460,124 @@ def check_enemy_collisions():
                 player_health = 0
             break
 
+def setup_camera():
+    """Configure drone-like camera following player from farther distance."""
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(65, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 10000)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    
+    # Drone camera: behind and above player, looking at player
+    camera_offset_x = camera_distance * math.cos(math.radians(player_angle + 180))
+    camera_offset_y = camera_distance * math.sin(math.radians(player_angle + 180))
+    
+    camera_x = player_pos[0] + camera_offset_x
+    camera_y = player_pos[1] + camera_offset_y
+    camera_z = player_pos[2] + camera_height
+    
+    # Look at player's upper body to see legs better
+    gluLookAt(camera_x, camera_y, camera_z,
+              player_pos[0], player_pos[1], player_pos[2] + 40,  # Look at upper body
+              0, 0, 1)
 
+# ==================== INPUT HANDLERS ====================
+def activate_dash():
+    """Activate dash mode."""
+    global dash_mode, dash_timer, dash_cooldown
+    
+    if dash_cooldown <= 0 and not dash_mode:
+        dash_mode = True
+        dash_timer = dash_duration
+        dash_cooldown = dash_cooldown_duration
+
+def keyboardListener(key, x, y):
+    """Handle keyboard input for movement."""
+    global player_pos, player_angle, is_dead, player_health, player_score, game_paused
+    
+    if key == b' ' and not is_dead:
+        game_paused = not game_paused
+        return
+    
+    if game_paused:
+        return
+    
+    if is_dead:
+        if key == b'r' or key == b'R':
+            reset_game()
+        return
+    
+    # Dash mode activation
+    if key == b'f' or key == b'F':
+        activate_dash()
+        return
+    
+    # Calculate movement speed (dash mode is faster)
+    move_speed = player_speed * (dash_speed_multiplier if dash_mode else 1.0)
+    
+    if key == b'w' or key == b'W':
+        # Move forward in direction player is facing
+        player_pos[0] += move_speed * math.cos(math.radians(player_angle))
+        player_pos[1] += move_speed * math.sin(math.radians(player_angle))
+        update_player()
+    
+    elif key == b's' or key == b'S':
+        # Move backward (opposite direction)
+        player_pos[0] -= move_speed * math.cos(math.radians(player_angle))
+        player_pos[1] -= move_speed * math.sin(math.radians(player_angle))
+        update_player()
+    
+    elif key == b'a' or key == b'A':
+        # Strafe left (perpendicular to facing direction)
+        player_pos[0] += move_speed * math.cos(math.radians(player_angle + 90))
+        player_pos[1] += move_speed * math.sin(math.radians(player_angle + 90))
+        update_player()
+    
+    elif key == b'd' or key == b'D':
+        # Strafe right (perpendicular to facing direction)
+        player_pos[0] += move_speed * math.cos(math.radians(player_angle - 90))
+        player_pos[1] += move_speed * math.sin(math.radians(player_angle - 90))
+        update_player()
+    
+    elif key == b'q' or key == b'Q':
+        # Rotate left
+        player_angle += 10
+        player_angle = normalize_angle(player_angle)
+    
+    elif key == b'e' or key == b'E':
+        # Rotate right
+        player_angle -= 10
+        player_angle = normalize_angle(player_angle)
+    
+    elif key == b'r' or key == b'R':
+        reset_game()
+
+def specialKeyListener(key, x, y):
+    """Handle special keys (not used for camera anymore)."""
+    pass
+
+def mouseListener(button, state, x, y):
+    """Handle mouse clicks for shooting."""
+    if is_dead or state != GLUT_DOWN or game_paused:
+        return
+    
+    # Bullet comes from gun direction (player's facing angle)
+    # Gun position relative to player (on right hand)
+    gun_offset_x = 25 * math.cos(math.radians(player_angle + 90))
+    gun_offset_y = 25 * math.sin(math.radians(player_angle + 90))
+    
+    muzzle_distance = 60
+    muzzle_x = player_pos[0] + gun_offset_x + muzzle_distance * math.cos(math.radians(player_angle))
+    muzzle_y = player_pos[1] + gun_offset_y + muzzle_distance * math.sin(math.radians(player_angle))
+    muzzle_z = player_pos[2] + 40
+    
+    if button == GLUT_LEFT_BUTTON:
+        bullet = Bullet([muzzle_x, muzzle_y, muzzle_z], player_angle, 0)
+        bullets.append(bullet)
+    
+    elif button == GLUT_RIGHT_BUTTON:
+        bullet = Bullet([muzzle_x, muzzle_y, muzzle_z], player_angle, 1)
+        bullets.append(bullet)
 
 
 
