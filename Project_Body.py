@@ -45,4 +45,25 @@ rock_count = 150        # Increased rocks
 house_count = 30        # Added houses
 
 
+# Environment settings - More bustling
+tree_count = 300        # Increased trees
+rock_count = 150        # Increased rocks
+house_count = 30        # Added houses
+
+# Jungle environment
+trees = []
+rocks = []
+houses = []
+
+# Diamond spawn management
+last_diamond_spawn = time.time()
+diamond_spawn_interval = 4.0
+ground_diamonds = []
+falling_diamonds = []
+regular_diamond_score = 10
+special_diamond_health = 1
+diamond_ground_lifetime = 10
+
+
+
 
