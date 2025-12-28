@@ -1459,3 +1459,97 @@ def check_enemy_collisions():
                 is_dead = True
                 player_health = 0
             break
+
+
+
+
+
+####
+def idle():
+    """Idle function for game updates."""
+    if not is_dead and not game_paused:
+        update_enemies()
+        update_bullets()
+        update_diamonds()
+        check_enemy_collisions()
+    
+    glutPostRedisplay()
+
+# ==================== MAIN FUNCTION ====================
+def main():
+    """Initialize and run the game."""
+    glutInit()
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+    glutInitWindowPosition(100, 100)
+    glutCreateWindow(b"DRONE CAMERA ARENA - Enhanced Version")
+    
+    glClearColor(0.7, 0.85, 1.0, 1.0)  # Darker background color
+    
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_COLOR_MATERIAL)
+    glEnable(GL_NORMALIZE)
+    
+    # Disable blending for most objects (except UI)
+    glDisable(GL_BLEND)
+    
+    # Better lighting setup
+    light_pos = [BOUNDARY_SIZE * 0.6, BOUNDARY_SIZE * 0.6, 1000, 1]
+    light_color = [1.0, 1.0, 0.95, 1.0]
+    ambient_color = [0.6, 0.6, 0.6, 1.0]
+    
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color)
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color)
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0)
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0003)
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0000005)
+    
+    create_jungle_environment()
+    
+    glutDisplayFunc(display)
+    glutKeyboardFunc(keyboardListener)
+    glutSpecialFunc(specialKeyListener)
+    glutMouseFunc(mouseListener)
+    glutIdleFunc(idle)
+    
+    print("=" * 60)
+    print("DRONE CAMERA ARENA - ENHANCED VERSION")
+    print("=" * 60)
+    print("FIXES & IMPROVEMENTS:")
+    print("- FIXED: Yellow screen issue by simplifying sky colors")
+    print("- ADDED: Solid, realistic boundary walls with brick pattern")
+    print("- IMPROVED: Better lighting with attenuation")
+    print("- FIXED: Drawing order to prevent visual artifacts")
+    print("- ADDED: Proper depth testing for sky")
+    print("=" * 60)
+    print("FEATURES:")
+    print("- DASH MODE: Press F to activate temporary speed boost")
+    print("- Camera shows thrice the view distance")
+    print("- Gun properly attached to player's hand, faces forward")
+    print("- Detailed player legs with animation")
+    print("- Dinosaurs move twice as fast (more challenging!)")
+    print("- Bustling environment with trees, rocks, and houses")
+    print("- Solid boundary walls that look like real stone walls")
+    print("=" * 60)
+    print("CONTROLS:")
+    print("W - Move forward (facing direction)")
+    print("S - Move backward")
+    print("A - Strafe left")
+    print("D - Strafe right")
+    print("Q/E - Rotate player")
+    print("F - Activate Dash Mode (speed boost)")
+    print("Left Click - Fast shot")
+    print("Right Click - Fireball")
+    print("SPACE - Pause/Resume")
+    print("R - Reset game")
+    print("=" * 60)
+    
+    glutMainLoop()
+
+if __name__ == "__main__":
+    main()
+
+
