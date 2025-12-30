@@ -111,20 +111,11 @@ class Enemy:
         elif enemy_type == 2:
             self.health = 3
             self.max_health = 3
-            self.radius = 80
-            self.size = 100
-            self.color = (0.4, 0.8, 0.2)
+            self.radius = 120
+            self.size = 150
+            self.color = (0.8, 0.0, 0.8)
             self.speed = 240
             self.score_value = 150
-        
-        else:
-            self.health = 1
-            self.max_health = 1
-            self.radius = 40
-            self.size = 60
-            self.color = (0.5, 0.5, 0.5)
-            self.speed = 100
-            self.score_value = 50
         
         self.damage_timer = 0
         self.damage_duration = 0.3
