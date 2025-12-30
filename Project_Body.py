@@ -1958,6 +1958,48 @@ def display():
               GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
     
     glutSwapBuffers()
+def reset_game():
+    global player_pos, player_angle, player_health, player_score, is_dead, game_paused
+    global falling_diamonds, ground_diamonds, bullets, enemies, dash_mode, dash_timer, dash_cooldown
+    global current_shirt_color, fire_gun_active, fire_gun_cooldown
+    global current_level, level_complete, enemies_killed_this_level, enemy_projectiles
+    global camera_mode, free_camera_pos, keys_collected, cheat_mode
+    
+    current_shirt_color = random.choice(shirt_colors)
+    
+    player_pos = [0, 0, 100]
+    player_angle = 0
+    
+    player_health = max_health
+    player_score = 0
+    is_dead = False
+    game_paused = False
+    cheat_mode = False
+    
+    dash_mode = False
+    dash_timer = 0
+    dash_cooldown = 0
+    
+    fire_gun_active = False
+    fire_gun_cooldown = 0
+    
+    camera_mode = 0
+    free_camera_pos = [0, -800, 500]
+    
+    current_level = 1
+    level_complete = False
+    enemies_killed_this_level = 0
+    keys_collected = 0
+    
+    falling_diamonds.clear()
+    ground_diamonds.clear()
+    bullets.clear()
+    enemies.clear()
+    enemy_projectiles.clear()
+    
+    create_jungle_environment()
+    spawn_golden_keys()
+    spawn_enemies_for_level()    
 
 # ==================== MAIN FUNCTION ====================
 def main():
