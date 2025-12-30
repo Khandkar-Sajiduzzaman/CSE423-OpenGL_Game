@@ -1467,6 +1467,48 @@ def check_enemy_collisions():
                 player_health = 0
             break
 
+# ==================== CAMERA SYSTEM ====================
+def setup_camera():
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    
+    aspect = WINDOW_WIDTH / WINDOW_HEIGHT
+    
+    if camera_mode == 0:
+        gluPerspective(follow_fov, aspect, 0.1, 15000)
+        
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        
+        camera_angle_rad = math.radians(player_angle)
+        camera_x = player_pos[0] + follow_camera_distance * math.sin(camera_angle_rad)
+        camera_y = player_pos[1] - follow_camera_distance * math.cos(camera_angle_rad)
+        camera_z = player_pos[2] + follow_camera_height
+        
+        gluLookAt(camera_x, camera_y, camera_z,
+                  player_pos[0], player_pos[1], player_pos[2],
+                  0, 0, 1)
+    
+    else:
+        gluPerspective(free_fov, aspect, 0.1, 15000)
+        
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        
+        gluLookAt(free_camera_pos[0], free_camera_pos[1], free_camera_pos[2],
+                  player_pos[0], player_pos[1], player_pos[2],
+                  0, 0, 1)
+
+def toggle_camera_mode():
+    global camera_mode, free_camera_pos
+    
+    camera_mode = 1 - camera_mode
+    
+    if camera_mode == 1:
+        camera_angle_rad = math.radians(player_angle)
+        free_camera_pos[0] = player_pos[0] + follow_camera_distance * math.sin(camera_angle_rad)
+        free_camera_pos[1] = player_pos[1] - follow_camera_distance * math.cos(camera_angle_rad)
+        free_camera_pos[2] = player_pos[2] + follow_camera_height
 
 
 # ==================== MAIN FUNCTION ====================
