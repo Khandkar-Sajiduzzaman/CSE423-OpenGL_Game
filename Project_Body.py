@@ -1511,6 +1511,216 @@ def toggle_camera_mode():
         free_camera_pos[2] = player_pos[2] + follow_camera_height
 
 
+# ==================== UI DRAWING ====================
+def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18, color=(1, 1, 1)):
+    glDisable(GL_DEPTH_TEST)
+    
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT)
+    
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    
+    glColor3f(*color)
+    glRasterPos2f(x, y)
+    for ch in text:
+        glutBitmapCharacter(font, ord(ch))
+    
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+    
+    glEnable(GL_DEPTH_TEST)
+
+def draw_health_bar():
+    glDisable(GL_DEPTH_TEST)
+    
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT)
+    
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    
+    glColor3f(0.0, 0.0, 0.0)
+    glBegin(GL_QUADS)
+    glVertex2f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 65)
+    glVertex2f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 65)
+    glVertex2f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 25)
+    glVertex2f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 25)
+    glEnd()
+    
+    glColor3f(0.15, 0.15, 0.15)
+    glBegin(GL_QUADS)
+    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 60)
+    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 60)
+    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 30)
+    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 30)
+    glEnd()
+    
+    segment_width = 50
+    spacing = 5
+    total_width = 5 * segment_width + 4 * spacing
+    start_x = WINDOW_WIDTH//2 - total_width//2
+    
+    for i in range(max_health):
+        segment_x = start_x + i * (segment_width + spacing)
+        segment_y = WINDOW_HEIGHT - 55
+        
+        if i < player_health:
+            glColor3f(*HEALTH_COLORS[i])
+        else:
+            glColor3f(0.3, 0.3, 0.3)
+        
+        glBegin(GL_QUADS)
+        glVertex2f(segment_x, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y)
+        glVertex2f(segment_x + segment_width, segment_y + 20)
+        glVertex2f(segment_x, segment_y + 20)
+        glEnd()
+    
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+    
+    glEnable(GL_DEPTH_TEST)
+
+def draw_minimap():
+    glDisable(GL_DEPTH_TEST)
+    
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT)
+    
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    
+    map_size = 200
+    map_x = WINDOW_WIDTH - map_size - 20
+    map_y = 20
+    
+    glColor3f(0.1, 0.1, 0.1)
+    glBegin(GL_QUADS)
+    glVertex2f(map_x, map_y)
+    glVertex2f(map_x + map_size, map_y)
+    glVertex2f(map_x + map_size, map_y + map_size)
+    glVertex2f(map_x, map_y + map_size)
+    glEnd()
+    
+    # Golden keys on minimap
+    for key in golden_keys:
+        if not key.collected:
+            key_map_x = map_x + (key.pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            key_map_y = map_y + (key.pos[1] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            
+            if (map_x <= key_map_x <= map_x + map_size and
+                map_y <= key_map_y <= map_y + map_size):
+                
+                glColor3f(1.0, 0.84, 0.0)
+                glPointSize(15)
+                glBegin(GL_POINTS)
+                glVertex2f(key_map_x, key_map_y)
+                glEnd()
+    
+    player_map_x = map_x + (player_pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+    player_map_y = map_y + (player_pos[1] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+    
+    player_map_x = max(map_x + 5, min(player_map_x, map_x + map_size - 5))
+    player_map_y = max(map_y + 5, min(player_map_y, map_y + map_size - 5))
+    
+    glColor3f(0.0, 1.0, 0.0)
+    glPointSize(12)
+    glBegin(GL_POINTS)
+    glVertex2f(player_map_x, player_map_y)
+    glEnd()
+    
+    for enemy in enemies:
+        if enemy.alive:
+            enemy_map_x = map_x + (enemy.pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            enemy_map_y = map_y + (enemy.pos[1] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
+            
+            if (map_x <= enemy_map_x <= map_x + map_size and
+                map_y <= enemy_map_y <= map_y + map_size):
+                
+                if enemy.type == 0:
+                    glColor3f(1.0, 0.0, 0.0)
+                    point_size = 6
+                elif enemy.type == 1:
+                    glColor3f(1.0, 0.5, 0.0)
+                    point_size = 8
+                else:
+                    glColor3f(0.8, 0.0, 0.8)
+                    point_size = 7
+                
+                glPointSize(point_size)
+                glBegin(GL_POINTS)
+                glVertex2f(enemy_map_x, enemy_map_y)
+                glEnd()
+    
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+    
+    glEnable(GL_DEPTH_TEST)
+
+def draw_level_ui():
+    draw_text(20, WINDOW_HEIGHT - 220, f"LEVEL {current_level}/{max_level}", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 0.8, 0.0))
+    draw_text(20, WINDOW_HEIGHT - 250, f"Golden Keys: {keys_collected}/{total_keys}", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 0.84, 0.0))
+    
+    if level_complete and level_transition_timer > 0:
+        glDisable(GL_DEPTH_TEST)
+        
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        gluOrtho2D(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT)
+        
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+        
+        glColor3f(0.0, 0.0, 0.0)
+        glBegin(GL_QUADS)
+        glVertex2f(0, 0)
+        glVertex2f(WINDOW_WIDTH, 0)
+        glVertex2f(WINDOW_WIDTH, WINDOW_HEIGHT)
+        glVertex2f(0, WINDOW_HEIGHT)
+        glEnd()
+        
+        glPopMatrix()
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        
+        glEnable(GL_DEPTH_TEST)
+        
+        draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, "LEVEL COMPLETE!", 
+                  GLUT_BITMAP_HELVETICA_18, (0.0, 1.0, 0.0))
+        
+        if current_level < max_level:
+            draw_text(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT//2, f"Advancing to Level {current_level + 1}...", 
+                      GLUT_BITMAP_HELVETICA_18, (0.5, 0.5, 1.0))
+        else:
+            draw_text(WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2, "GAME COMPLETED!", 
+                      GLUT_BITMAP_HELVETICA_18, (1.0, 0.5, 0.0))
+
+
+#input HANDLERS
+
+
+
 # ==================== MAIN FUNCTION ====================
 def main():
     """Initialize and run the game."""
