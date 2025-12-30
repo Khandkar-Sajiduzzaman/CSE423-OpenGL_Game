@@ -593,6 +593,7 @@ def draw_stationary_enemy(enemy):
     glPopMatrix() # YASIN START FROM HERE
 
 
+<<<<<<< HEAD
 def draw_stationary_enemy(enemy):
     """Draw stationary enemy - looks like player but red."""
     glPushMatrix()
@@ -639,6 +640,8 @@ def draw_stationary_enemy(enemy):
     draw_enemy_health_bar(enemy)
     
     glPopMatrix()
+=======
+>>>>>>> c307a2b371cbc928653f6e6dccedcac933ac51e2
 
 def draw_patrolling_enemy(enemy):
     """Draw patrolling enemy - giant (3x bigger)."""
