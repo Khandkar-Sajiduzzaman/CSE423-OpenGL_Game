@@ -366,8 +366,9 @@ def bounce_from_boundary(pos):
         pos[1] = -BOUNDARY_SIZE + 10
 
 # ==================== DRAWING FUNCTIONS ====================
+# ==================== PLAYER DRAWING ====================
 def draw_player():
-    """Draw the player character with proper gun placement and legs."""
+    """Draw player with TWO GUNS"""
     if is_dead:
         return
     
@@ -375,111 +376,145 @@ def draw_player():
     glTranslatef(player_pos[0], player_pos[1], player_pos[2])
     glRotatef(player_angle, 0, 0, 1)
     
-    # Player torso
-    if dash_mode:
-        glColor3f(0.5, 0.8, 0.0)  # Dash mode color - brighter green
-    else:
-        glColor3f(0.0, 0.6, 0.0)  # Normal color
+    scale = 1.5
     
+    # Body
+    glColor3f(*current_shirt_color)
     glPushMatrix()
-    glScalef(1.2, 0.8, 2.0)
-    glutSolidCube(50)
+    glScalef(1.2 * scale, 0.9 * scale, 1.8 * scale)
+    glutSolidCube(45)
     glPopMatrix()
     
-    # Player head
-    glColor3f(0.05, 0.05, 0.05)
+    # Head
+    glColor3f(0.9, 0.7, 0.6)
     glPushMatrix()
-    glTranslatef(0, 0, 90)
-    gluSphere(gluNewQuadric(), 20, 20, 20)
+    glTranslatef(0, 0, 70 * scale)
+    gluSphere(gluNewQuadric(), 22 * scale, 12, 12)
     glPopMatrix()
     
-    # Player arms with gun on right hand
-    glColor3f(1.0, 0.85, 0.7)
-    for side in [-1, 1]:
-        glPushMatrix()
-        glTranslatef(side * 30, 0, 60)
-        glRotatef(-90, 1, 0, 0)
-        gluCylinder(gluNewQuadric(), 6, 6, 40, 10, 10)
-        glPopMatrix()
+    # Helmet
+    glColor3f(0.3, 0.3, 0.3)
+    glPushMatrix()
+    glTranslatef(0, 0, 75 * scale)
+    glScalef(1.1, 1.1, 0.7)
+    gluSphere(gluNewQuadric(), 23 * scale, 10, 10)
+    glPopMatrix()
     
-    # Player gun on right hand, facing forward (same as head)
-    draw_player_gun()
+    # Arms
+    arm_color = (0.9, 0.7, 0.6)
     
-    # Player legs (detailed with knees and feet)
-    draw_player_legs()
+    # Left arm
+    glColor3f(*arm_color)
+    glPushMatrix()
+    glTranslatef(-35 * scale, 0, 35 * scale)
+    glRotatef(-20, 0, 1, 0)
+    glRotatef(-30, 1, 0, 0)
+    glScalef(0.3 * scale, 0.3 * scale, 1.2 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    # Right arm
+    glPushMatrix()
+    glTranslatef(35 * scale, 0, 35 * scale)
+    glRotatef(20, 0, 1, 0)
+    glRotatef(-30, 1, 0, 0)
+    glScalef(0.3 * scale, 0.3 * scale, 1.2 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    # Legs
+    glColor3f(0.2, 0.2, 0.4)
+    
+    glPushMatrix()
+    glTranslatef(-15 * scale, 0, -35 * scale)
+    glScalef(0.4 * scale, 0.4 * scale, 1.5 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(15 * scale, 0, -35 * scale)
+    glScalef(0.4 * scale, 0.4 * scale, 1.5 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    # Feet
+    glColor3f(0.3, 0.2, 0.1)
+    
+    glPushMatrix()
+    glTranslatef(-15 * scale, 8 * scale, -65 * scale)
+    glScalef(0.4 * scale, 0.6 * scale, 0.3 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(15 * scale, 8 * scale, -65 * scale)
+    glScalef(0.4 * scale, 0.6 * scale, 0.3 * scale)
+    glutSolidCube(35)
+    glPopMatrix()
+    
+    # Draw both guns
+    draw_pistol()
+    draw_cannon()
     
     glPopMatrix()
 
-def draw_player_gun():
-    """Draw the gun on player's right hand, facing forward."""
-    glColor3f(0.3, 0.3, 0.3)  # Gun metal color
+def draw_pistol():
+    """Draw pistol on LEFT hand"""
+    scale = 1.5
     
-    # Gun position on right hand
+    glColor3f(0.2, 0.2, 0.2)
+    
     glPushMatrix()
-    # Position on right arm (side=1)
-    glTranslatef(25, 20, 60)  # Adjusted position on arm
+    glTranslatef(-30 * scale, 50 * scale, 40 * scale)
+    glRotatef(-90, 1, 0, 0)
     
-    # Gun body (facing forward)
-    glRotatef(-90, 0, 1, 0)  # Rotate to point forward
-    gluCylinder(gluNewQuadric(), 4, 4, 50, 10, 10)
-    
-    # Gun muzzle at the front
-    glTranslatef(0, 0, 50)
-    glutSolidCone(5, 12, 8, 8)
-    
-    # Gun handle
     glPushMatrix()
-    glTranslatef(0, 0, 15)
-    glRotatef(90, 1, 0, 0)
-    gluCylinder(gluNewQuadric(), 4, 3, 15, 8, 8)
+    gluCylinder(gluNewQuadric(), 4 * scale, 4 * scale, 50 * scale, 8, 8)
+    glPopMatrix()
+    
+    glColor3f(0.4, 0.3, 0.2)
+    glPushMatrix()
+    glTranslatef(0, 0, -10 * scale)
+    glRotatef(45, 1, 0, 0)
+    gluCylinder(gluNewQuadric(), 5 * scale, 3 * scale, 20 * scale, 8, 8)
     glPopMatrix()
     
     glPopMatrix()
 
-def draw_player_legs():
-    """Draw detailed player legs with knees and feet."""
-    glColor3f(0.05, 0.05, 0.8)
+def draw_cannon():
+    """Draw cannon on RIGHT hand"""
+    scale = 1.5
     
-    # Leg animation based on movement
-    current_time = time.time()
-    leg_swing = 0
-    if dash_mode:
-        leg_swing = 30 * math.sin(current_time * 20)  # Faster swing in dash mode
+    if fire_gun_active:
+        glColor3f(1.0, 0.3, 0.0)
     else:
-        leg_swing = 15 * math.sin(current_time * 10)  # Normal swing
+        glColor3f(0.3, 0.3, 0.3)
     
-    for side_idx, side in enumerate([-1, 1]):
-        glPushMatrix()
-        glTranslatef(side * 20, 0, 0)
-        
-        # Thigh
-        glPushMatrix()
-        glTranslatef(0, 0, -25)
-        glRotatef(leg_swing * (1 if side_idx == 0 else -1), 1, 0, 0)  # Alternate swing
-        glRotatef(180, 1, 0, 0)
-        gluCylinder(gluNewQuadric(), 8, 6, 30, 10, 10)
-        
-        # Knee
-        glTranslatef(0, 0, -30)
-        glutSolidSphere(5, 8, 8)
-        
-        # Shin
-        glRotatef(-leg_swing * 0.5 * (1 if side_idx == 0 else -1), 1, 0, 0)
-        gluCylinder(gluNewQuadric(), 6, 4, 25, 10, 10)
-        
-        # Foot
-        glTranslatef(0, 0, -25)
-        glColor3f(0.1, 0.1, 0.1)  # Dark color for shoes
-        glPushMatrix()
-        glRotatef(90, 0, 1, 0)
-        glScalef(1.5, 0.5, 1.0)
-        glutSolidCube(15)
-        glPopMatrix()
-        
-        glPopMatrix()
-        glColor3f(0.05, 0.05, 0.8)  # Back to leg color
-        
-        glPopMatrix()
+    glPushMatrix()
+    glTranslatef(30 * scale, 50 * scale, 40 * scale)
+    glRotatef(-90, 1, 0, 0)
+    
+    glPushMatrix()
+    gluCylinder(gluNewQuadric(), 12 * scale, 12 * scale, 30 * scale, 12, 12)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(0, 0, 30 * scale)
+    barrel_length = 100 * scale
+    gluCylinder(gluNewQuadric(), 10 * scale, 8 * scale, barrel_length, 12, 12)
+    glPopMatrix()
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glPushMatrix()
+    glTranslatef(0, 0, 30 * scale + barrel_length)
+    gluSphere(gluNewQuadric(), 11 * scale, 8, 8)
+    glPopMatrix()
+    
+    glPopMatrix()
+
+
+
+#Rafi Start from here
 
 def draw_stationary_enemy(enemy):
     """Draw stationary enemy - looks like player but red."""
