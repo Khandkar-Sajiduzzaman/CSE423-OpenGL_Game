@@ -184,7 +184,6 @@ class Diamond:
             self.color = (1.0, 0.84, 0.0)
 
 # ==================== BULLETS ====================
-# ==================== BULLETS ====================
 class Bullet:
     def __init__(self, pos, angle, bullet_type=0):
         self.pos = pos.copy()
@@ -249,6 +248,96 @@ def bounce_from_boundary(pos):
         pos[1] = BOUNDARY_SIZE - 10
     elif pos[1] < -BOUNDARY_SIZE:
         pos[1] = -BOUNDARY_SIZE + 10
+
+# ==================== CHEAT MODE FUNCTIONS ==================== 
+def find_closest_enemy():
+    """Find the closest alive enemy to the player"""
+    closest_enemy = None
+    min_distance = float('inf')
+    
+    for enemy in enemies:
+        if enemy.alive:
+            dist = distance_2d(player_pos, enemy.pos)
+            if dist < min_distance:
+                min_distance = dist
+                closest_enemy = enemy
+    
+    return closest_enemy
+
+def cheat_move_towards(target_pos, speed_multiplier=1.0):
+    """Move player towards a target position smoothly"""
+    global player_angle
+    
+    dx = target_pos[0] - player_pos[0]
+    dy = target_pos[1] - player_pos[1]
+    dist = math.sqrt(dx*dx + dy*dy)
+    
+    if dist > 50:
+        target_angle = math.degrees(math.atan2(dx, dy))
+        angle_diff = normalize_angle(target_angle - player_angle)
+        if angle_diff > 180:
+            angle_diff -= 360
+        
+        rotation_speed = 360 * delta_time
+        if abs(angle_diff) < rotation_speed:
+            player_angle = target_angle
+        else:
+            player_angle += rotation_speed if angle_diff > 0 else -rotation_speed
+        
+        player_angle = normalize_angle(player_angle)
+        
+        move_speed = player_speed * speed_multiplier * delta_time
+        player_pos[0] += move_speed * (-math.sin(math.radians(player_angle)))
+        player_pos[1] += move_speed * math.cos(math.radians(player_angle))
+        
+        if check_boundary_collision(player_pos):
+            bounce_from_boundary(player_pos)
+        
+        return True
+    
+    return False
+
+def cheat_auto_shoot():
+    """Automatically shoot at the target enemy"""
+    global cheat_shoot_cooldown
+    
+    if cheat_shoot_cooldown <= 0 and cheat_target_enemy and cheat_target_enemy.alive:
+        dx = cheat_target_enemy.pos[0] - player_pos[0]
+        dy = cheat_target_enemy.pos[1] - player_pos[1]
+        angle_to_enemy = math.degrees(math.atan2(dx, dy))
+        
+        scale = 1.5
+        gun_offset_x = -30 * scale * math.cos(math.radians(player_angle + 90))
+        gun_offset_y = -30 * scale * math.sin(math.radians(player_angle + 90))
+        
+        muzzle_distance = 60 * scale
+        muzzle_x = player_pos[0] + gun_offset_x + muzzle_distance * (-math.sin(math.radians(player_angle)))
+        muzzle_y = player_pos[1] + gun_offset_y + muzzle_distance * math.cos(math.radians(player_angle))
+        muzzle_z = player_pos[2] + 40 * scale
+        
+        bullet = Bullet([muzzle_x, muzzle_y, muzzle_z], player_angle, 0)
+        bullets.append(bullet)
+        
+        cheat_shoot_cooldown = cheat_shoot_interval
+
+def update_cheat_mode():
+    """Main cheat mode update logic"""
+    global cheat_target_enemy, cheat_shoot_cooldown
+    
+    if not cheat_mode or is_dead or game_paused:
+        return
+    
+    if cheat_shoot_cooldown > 0:
+        cheat_shoot_cooldown -= delta_time
+    
+    cheat_target_enemy = find_closest_enemy()
+    
+    if cheat_target_enemy and cheat_target_enemy.alive:
+        enemy_reached = cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=1.5)
+        cheat_auto_shoot()
+        
+        if distance_2d(player_pos, cheat_target_enemy.pos) < 300:
+            shoot_fire_gun()
 
 # ==================== LEVEL MANAGEMENT ====================
 def get_level_info():
