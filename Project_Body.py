@@ -513,9 +513,6 @@ def draw_cannon():
     glPopMatrix()
 
 
-
-#Rafi Start from here
-
 def draw_stationary_enemy(enemy):
     """Draw stationary enemy - looks like player but red."""
     glPushMatrix()
