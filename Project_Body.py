@@ -339,62 +339,107 @@ def update_cheat_mode():
         if distance_2d(player_pos, cheat_target_enemy.pos) < 300:
             shoot_fire_gun()
 
-# ==================== LEVEL MANAGEMENT ====================
-def get_level_info():
-    level_configs = {
-        1: {"name": "Level 1", "description": "Starting challenge", "enemies": [0, 0, 1]},
-        2: {"name": "Level 2", "description": "More enemies", "enemies": [0, 0, 1, 1, 2]},
-        3: {"name": "Level 3", "description": "Getting tough", "enemies": [0, 1, 1, 2, 2]},
-        4: {"name": "Level 4", "description": "Many foes", "enemies": [0, 1, 2, 2, 2]},
-        5: {"name": "Level 5", "description": "Halfway there", "enemies": [1, 1, 2, 2, 2]},
-        6: {"name": "Level 6", "description": "Heavy assault", "enemies": [0, 1, 1, 2, 2, 2]},
-        7: {"name": "Level 7", "description": "Intense battle", "enemies": [1, 1, 2, 2, 2, 2]},
-        8: {"name": "Level 8", "description": "Near the end", "enemies": [1, 2, 2, 2, 2, 2]},
-        9: {"name": "Level 9", "description": "Almost done", "enemies": [2, 2, 2, 2, 2, 2]},
-        10: {"name": "Level 10 - FINAL", "description": "Final challenge!", "enemies": [1, 2, 2, 2, 2, 2, 2]},
-    }
+# ==================== LEVEL MANAGEMENT ==================== YASIN
+def spawn_golden_keys():
+    """Spawn 3 golden keys at random locations on the map"""
+    global golden_keys
     
-    return level_configs.get(current_level, level_configs[1])
+    golden_keys.clear()
+    
+    safe_boundary = BOUNDARY_SIZE - 500
+    
+    for i in range(total_keys):
+        attempts = 0
+        while attempts < 50:
+            x = random.uniform(-safe_boundary, safe_boundary)
+            y = random.uniform(-safe_boundary, safe_boundary)
+            z = 150
+            
+            too_close = False
+            for existing_key in golden_keys:
+                if distance_2d([x, y, z], existing_key.pos) < 800:
+                    too_close = True
+                    break
+            
+            if not too_close:
+                key = GoldenKey([x, y, z])
+                golden_keys.append(key)
+                break
+            
+            attempts += 1
+
+def spawn_key_guardians():
+    """Spawn Type 0 and Type 1 enemies around each key location"""
+    for key in golden_keys:
+        num_type0 = 3 + current_level
+        for _ in range(num_type0):
+            angle = random.uniform(0, 360)
+            distance = random.uniform(200, 400)
+            x = key.pos[0] + distance * math.cos(math.radians(angle))
+            y = key.pos[1] + distance * math.sin(math.radians(angle))
+            z = 40
+            
+            x = max(-BOUNDARY_SIZE + 100, min(x, BOUNDARY_SIZE - 100))
+            y = max(-BOUNDARY_SIZE + 100, min(y, BOUNDARY_SIZE - 100))
+            
+            enemy = Enemy(0, [x, y, z])
+            difficulty_multiplier = 1 + (current_level - 1) * 0.3
+            enemy.health = int(enemy.health * difficulty_multiplier)
+            enemy.max_health = enemy.health
+            enemies.append(enemy)
+        
+        num_type1 = 2 + current_level // 2
+        for _ in range(num_type1):
+            angle = random.uniform(0, 360)
+            distance = random.uniform(300, 600)
+            x = key.pos[0] + distance * math.cos(math.radians(angle))
+            y = key.pos[1] + distance * math.sin(math.radians(angle))
+            z = 40
+            
+            x = max(-BOUNDARY_SIZE + 100, min(x, BOUNDARY_SIZE - 100))
+            y = max(-BOUNDARY_SIZE + 100, min(y, BOUNDARY_SIZE - 100))
+            
+            enemy = Enemy(1, [x, y, z])
+            difficulty_multiplier = 1 + (current_level - 1) * 0.3
+            enemy.health = int(enemy.health * difficulty_multiplier)
+            enemy.max_health = enemy.health
+            enemies.append(enemy)
 
 def spawn_enemies_for_level():
     global enemies
     
     enemies.clear()
-    level_info = get_level_info()
     
-    enemy_types = level_info["enemies"]
-    enemies_per_type = 5 + current_level * 2
+    num_chasers = 3 + current_level * 2
+    safe_boundary = BOUNDARY_SIZE - 200
     
-    for enemy_type in enemy_types:
-        for _ in range(enemies_per_type):
-            angle = random.uniform(0, 360)
-            distance = random.uniform(500, BOUNDARY_SIZE - 200)
-            x = distance * math.cos(math.radians(angle))
-            y = distance * math.sin(math.radians(angle))
-            z = 40
-            
-            enemy = Enemy(enemy_type, [x, y, z])
-            
-            # Scale health with level
-            difficulty_multiplier = 1 + (current_level - 1) * 0.3
-            enemy.health = int(enemy.health * difficulty_multiplier)
-            enemy.max_health = enemy.health
-            
-            enemies.append(enemy)
+    for _ in range(num_chasers):
+        angle = random.uniform(0, 360)
+        distance = random.uniform(800, safe_boundary)
+        x = distance * math.cos(math.radians(angle))
+        y = distance * math.sin(math.radians(angle))
+        z = 40
+        
+        enemy = Enemy(2, [x, y, z])
+        difficulty_multiplier = 1 + (current_level - 1) * 0.3
+        enemy.health = int(enemy.health * difficulty_multiplier)
+        enemy.max_health = enemy.health
+        enemies.append(enemy)
+    
+    spawn_key_guardians()
 
 def check_level_completion():
-    global level_complete, level_transition_timer, enemies_killed_this_level
+    global level_complete, level_transition_timer, keys_collected
     
     if level_complete:
         return
     
-    required = enemies_required_per_level[min(current_level - 1, len(enemies_required_per_level) - 1)]
-    if enemies_killed_this_level >= required:
+    if keys_collected >= total_keys:
         level_complete = True
         level_transition_timer = level_transition_duration
 
 def advance_level():
-    global current_level, level_complete, enemies_killed_this_level, player_pos, player_angle
+    global current_level, level_complete, enemies_killed_this_level, player_pos, player_angle, keys_collected
     
     if current_level >= max_level:
         return
@@ -402,9 +447,13 @@ def advance_level():
     current_level += 1
     level_complete = False
     enemies_killed_this_level = 0
+    keys_collected = 0
     
-    randomize_player_position()
+    player_pos = [0, 0, 100]
+    player_angle = 0
+    
     create_jungle_environment()
+    spawn_golden_keys()
     spawn_enemies_for_level()
 
 def update_level_transition():
@@ -415,44 +464,6 @@ def update_level_transition():
         
         if level_transition_timer <= 0:
             advance_level()
-
-def randomize_player_position():
-    global player_pos, player_angle
-    
-    safe_zone = BOUNDARY_SIZE - 1000
-    player_pos[0] = random.uniform(-safe_zone, safe_zone)
-    player_pos[1] = random.uniform(-safe_zone, safe_zone)
-    player_pos[2] = 100
-    
-    player_angle = random.uniform(0, 360)
-# ==================== UTILITY FUNCTIONS ====================
-def distance_2d(pos1, pos2):
-    return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
-
-def distance_3d(pos1, pos2):
-    return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2 + (pos1[2] - pos2[2])**2)
-
-def normalize_angle(angle):
-    while angle > 360:
-        angle -= 360
-    while angle < 0:
-        angle += 360
-    return angle
-
-def check_boundary_collision(pos):
-    return (abs(pos[0]) > BOUNDARY_SIZE or 
-            abs(pos[1]) > BOUNDARY_SIZE)
-
-def bounce_from_boundary(pos):
-    if pos[0] > BOUNDARY_SIZE:
-        pos[0] = BOUNDARY_SIZE - 10
-    elif pos[0] < -BOUNDARY_SIZE:
-        pos[0] = -BOUNDARY_SIZE + 10
-    
-    if pos[1] > BOUNDARY_SIZE:
-        pos[1] = BOUNDARY_SIZE - 10
-    elif pos[1] < -BOUNDARY_SIZE:
-        pos[1] = -BOUNDARY_SIZE + 10
 
 # ==================== DRAWING FUNCTIONS ====================
 # ==================== PLAYER DRAWING ====================
