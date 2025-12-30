@@ -2000,51 +2000,53 @@ def reset_game():
     create_jungle_environment()
     spawn_golden_keys()
     spawn_enemies_for_level()    
+    
+    
+def idle():
+    update_delta_time()
+    
+    if not is_dead and not game_paused:
+        update_enemies()
+        update_enemy_shooting()
+        update_bullets()
+        update_enemy_projectiles()
+        update_diamonds()
+        update_golden_keys()
+        check_enemy_collisions()
+        check_level_completion()
+        update_level_transition()
+        update_cheat_mode()
+    
+    glutPostRedisplay()
 
-# ==================== MAIN FUNCTION ====================
+# ==================== MAIN ====================
 def main():
-    """Initialize and run the game."""
     glutInit()
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"DRONE CAMERA ARENA - Enhanced Version")
-    
-    glClearColor(0.7, 0.85, 1.0, 1.0)  # Darker background color
+    glutCreateWindow(b"GOLDEN KEY QUEST - CANNON ONE-SHOTS!")
     
     glEnable(GL_DEPTH_TEST)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glEnable(GL_COLOR_MATERIAL)
-    glEnable(GL_NORMALIZE)
-    
-    # Disable blending for most objects (except UI)
-    glDisable(GL_BLEND)
-    
-    # Better lighting setup
-    light_pos = [BOUNDARY_SIZE * 0.6, BOUNDARY_SIZE * 0.6, 1000, 1]
-    light_color = [1.0, 1.0, 0.95, 1.0]
-    ambient_color = [0.6, 0.6, 0.6, 1.0]
-    
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color)
-    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0)
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0003)
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0000005)
     
     create_jungle_environment()
+    
+    player_pos[0] = 0
+    player_pos[1] = 0
+    player_pos[2] = 100
+    player_angle = 0
+    
+    spawn_golden_keys()
+    spawn_enemies_for_level()
     
     glutDisplayFunc(display)
     glutKeyboardFunc(keyboardListener)
     glutSpecialFunc(specialKeyListener)
     glutMouseFunc(mouseListener)
     glutIdleFunc(idle)
-    
+
     
     glutMainLoop()
 
-
-main()
-
-
+if __name__ == "__main__":
+    main()
