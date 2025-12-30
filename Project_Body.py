@@ -1855,6 +1855,109 @@ def mouseListener(button, state, x, y):
     if button == GLUT_LEFT_BUTTON:
         shoot_pistol()
 
+#yasiN
+
+# ==================== DISPLAY ====================
+def display():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+    
+    setup_camera()
+    
+    draw_sky()
+    draw_ground()
+    draw_boundary_walls()
+    
+    for tree in trees:
+        draw_tree(tree)
+    
+    for rock in rocks:
+        draw_rock(rock)
+    
+    for house in houses:
+        draw_house(house)
+    
+    for key in golden_keys:
+        draw_golden_key(key)
+    
+    for enemy in enemies:
+        if distance_2d(enemy.pos, player_pos) < 1500:
+            draw_enemy(enemy)
+    
+    for diamond in falling_diamonds:
+        draw_diamond(diamond)
+    
+    for diamond in ground_diamonds:
+        draw_diamond(diamond)
+    
+    for bullet in bullets:
+        draw_bullet(bullet)
+    
+    for projectile in enemy_projectiles:
+        draw_enemy_projectile(projectile)
+    
+    draw_player()
+    
+    draw_health_bar()
+    draw_minimap()
+    draw_level_ui()
+    
+    draw_text(20, WINDOW_HEIGHT - 100, f"Score: {player_score}", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.0))
+    draw_text(20, WINDOW_HEIGHT - 130, f"Health: {player_health}/{max_health}", 
+              GLUT_BITMAP_HELVETICA_18, (0.0, 1.0, 0.5))
+    draw_text(20, WINDOW_HEIGHT - 160, f"Position: X={int(player_pos[0])}, Y={int(player_pos[1])}", 
+              GLUT_BITMAP_HELVETICA_18, (0.5, 0.8, 1.0))
+    
+    mode_text = "FOLLOW MODE (90°)" if camera_mode == 0 else "FREE MODE (120°)"
+    mode_color = (0.0, 1.0, 1.0) if camera_mode == 0 else (1.0, 0.5, 1.0)
+    draw_text(20, WINDOW_HEIGHT - 190, f"Camera: {mode_text}", 
+              GLUT_BITMAP_HELVETICA_18, mode_color)
+    
+    if cheat_mode:
+        draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 100, "CHEAT MODE ACTIVE!", 
+                  GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
+        if cheat_target_enemy:
+            draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 130, "KILLING ENEMIES ONLY...", 
+                      GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 0.0))
+        else:
+            draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 130, "All Enemies Killed!", 
+                      GLUT_BITMAP_HELVETICA_18, (0.0, 1.0, 0.0))
+    
+    if camera_mode == 1:
+        draw_text(WINDOW_WIDTH - 400, WINDOW_HEIGHT - 100, 
+                  f"Cam Pos: ({int(free_camera_pos[0])}, {int(free_camera_pos[1])}, {int(free_camera_pos[2])})",
+                  GLUT_BITMAP_HELVETICA_18, (0.5, 1.0, 1.0))
+    
+    if fire_gun_active:
+        draw_text(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 150, "CANNON FIRING! (5 DAMAGE - ONE-SHOT!)", 
+                  GLUT_BITMAP_HELVETICA_18, (1.0, 0.3, 0.0))
+    
+    if is_dead:
+        draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 + 50, "GAME OVER!", 
+                  GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 0.0))
+        draw_text(WINDOW_WIDTH//2 - 140, WINDOW_HEIGHT//2 - 20, f"Final Score: {player_score}", 
+                  GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.0))
+        draw_text(WINDOW_WIDTH//2 - 160, WINDOW_HEIGHT//2 - 50, f"Final Level: {current_level}", 
+                  GLUT_BITMAP_HELVETICA_18, (0.5, 1.0, 1.0))
+        draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT//2 - 80, "Press R to Restart", 
+                  GLUT_BITMAP_HELVETICA_18, (0.0, 1.0, 0.0))
+    
+    if game_paused:
+        draw_text(WINDOW_WIDTH//2 - 80, WINDOW_HEIGHT//2, "PAUSED", 
+                  GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.0))
+    
+    draw_text(20, 150, "OBJECTIVE: Collect all 3 Golden Keys to advance!", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 0.84, 0.0))
+    draw_text(20, 120, "CONTROLS: LEFT CLICK=Pistol(1dmg), F=Cannon(5dmg-ONESHOT!), W/A/S/D=Move, Q/E=Rotate, Tab=Dash, C=Camera", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.3))
+    draw_text(20, 90, "SPACE=Pause, X=CHEAT (Kills Enemies Only), R=Reset", 
+              GLUT_BITMAP_HELVETICA_18, (0.3, 1.0, 1.0))
+    draw_text(20, 60, "CHEAT MODE: Auto-kills all enemies, stays in bounds!", 
+              GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
+    
+    glutSwapBuffers()
 
 # ==================== MAIN FUNCTION ====================
 def main():
