@@ -780,6 +780,73 @@ def update_enemy_projectiles():
                 player_health = 0
             continue
 
+# ==================== GOLDEN KEY DRAWING ====================
+def draw_golden_key(key):
+    if key.collected:
+        return
+    
+    glPushMatrix()
+    glTranslatef(key.pos[0], key.pos[1], key.pos[2] + key.hover_offset)
+    
+    glRotatef(key.rotation_angle, 0, 0, 1)
+    
+    glColor3f(1.0, 0.84, 0.0)
+    glPushMatrix()
+    glRotatef(90, 1, 0, 0)
+    gluCylinder(gluNewQuadric(), 8, 8, 80, 12, 12)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(0, 0, 85)
+    glutSolidCube(40)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(15, 0, -5)
+    glutSolidCube(15)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(-15, 0, -5)
+    glutSolidCube(15)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(15, 0, -25)
+    glutSolidCube(15)
+    glPopMatrix()
+    
+    glow_size = 1.0 + 0.3 * math.sin(key.glow_pulse)
+    glColor3f(1.0, 1.0, 0.5)
+    glPushMatrix()
+    glScalef(glow_size, glow_size, glow_size)
+    glTranslatef(0, 0, 40)
+    gluSphere(gluNewQuadric(), 50, 16, 16)
+    glPopMatrix()
+    
+    glPopMatrix()
+
+def update_golden_keys():
+    global keys_collected, player_score
+    
+    if game_paused:
+        return
+    
+    for key in golden_keys:
+        if key.collected:
+            continue
+        
+        key.hover_offset = 20 * math.sin(key.hover_speed * time.time())
+        key.rotation_angle += 60 * delta_time
+        key.rotation_angle = normalize_angle(key.rotation_angle)
+        key.glow_pulse += 3 * delta_time
+        
+        if distance_3d(player_pos, [key.pos[0], key.pos[1], key.pos[2] + key.hover_offset]) < 80:
+            key.collected = True
+            keys_collected += 1
+            player_score += 500
+
+#start from here lapii
 
 # ==================== MAIN FUNCTION ====================
 def main():
@@ -821,41 +888,10 @@ def main():
     glutMouseFunc(mouseListener)
     glutIdleFunc(idle)
     
-    print("=" * 60)
-    print("DRONE CAMERA ARENA - ENHANCED VERSION")
-    print("=" * 60)
-    print("FIXES & IMPROVEMENTS:")
-    print("- FIXED: Yellow screen issue by simplifying sky colors")
-    print("- ADDED: Solid, realistic boundary walls with brick pattern")
-    print("- IMPROVED: Better lighting with attenuation")
-    print("- FIXED: Drawing order to prevent visual artifacts")
-    print("- ADDED: Proper depth testing for sky")
-    print("=" * 60)
-    print("FEATURES:")
-    print("- DASH MODE: Press F to activate temporary speed boost")
-    print("- Camera shows thrice the view distance")
-    print("- Gun properly attached to player's hand, faces forward")
-    print("- Detailed player legs with animation")
-    print("- Dinosaurs move twice as fast (more challenging!)")
-    print("- Bustling environment with trees, rocks, and houses")
-    print("- Solid boundary walls that look like real stone walls")
-    print("=" * 60)
-    print("CONTROLS:")
-    print("W - Move forward (facing direction)")
-    print("S - Move backward")
-    print("A - Strafe left")
-    print("D - Strafe right")
-    print("Q/E - Rotate player")
-    print("F - Activate Dash Mode (speed boost)")
-    print("Left Click - Fast shot")
-    print("Right Click - Fireball")
-    print("SPACE - Pause/Resume")
-    print("R - Reset game")
-    print("=" * 60)
     
     glutMainLoop()
 
-if __name__ == "__main__":
-    main()
+
+main()
 
 
