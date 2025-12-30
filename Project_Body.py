@@ -29,7 +29,55 @@ dash_cooldown = 0
 dash_cooldown_duration = 2.0
 dash_speed_multiplier = 4.0
 
-# Health bar colors (5 parts) - from green (full) to red (low)
+# Fire gun settings
+fire_gun_active = False
+fire_gun_cooldown = 0
+fire_gun_cooldown_duration = 1.0
+
+# ==================== CHEAT MODE ====================
+cheat_mode = False
+cheat_target_enemy = None
+cheat_shoot_cooldown = 0
+cheat_shoot_interval = 0.3
+
+# ==================== CAMERA SYSTEM ====================
+# Camera Mode: 0 = Follow Mode (90°), 1 = Free Mode (120°)
+camera_mode = 0
+
+# Follow Camera (Mode 0) - 90° FOV
+follow_camera_distance = 800
+follow_camera_height = 500
+follow_fov = 90
+
+# Free Camera (Mode 1) - 120° FOV  
+free_camera_pos = [0, -800, 500]
+free_camera_move_speed = 300
+free_fov = 120
+
+# ==================== LEVEL SYSTEM ====================
+current_level = 1
+max_level = 5
+level_complete = False
+level_transition_timer = 0
+level_transition_duration = 3.0
+enemies_killed_this_level = 0
+
+# Keys collected tracking
+keys_collected = 0
+total_keys = 3
+
+# Random shirt colors
+shirt_colors = [
+    (0.0, 0.0, 0.8),    # Blue
+    (0.5, 0.0, 0.5),    # Purple
+    (0.8, 0.0, 0.0),    # Red
+    (0.0, 0.6, 0.0),    # Green
+    (0.8, 0.5, 0.0),    # Orange
+    (0.0, 0.6, 0.6),    # Cyan
+]
+current_shirt_color = random.choice(shirt_colors)
+
+# Health bar colors
 HEALTH_COLORS = [
     (1.0, 0.0, 0.0),    # Red
     (1.0, 0.5, 0.0),    # Orange
@@ -43,23 +91,10 @@ ARENA_SIZE = 5000
 BOUNDARY_SIZE = ARENA_SIZE - 400
 GROUND_Z = 0
 
-# Camera settings - Drone-like camera following player
-camera_distance = 1200  # Increased to thrice the distance
-camera_height = 600     # Increased height for better view
-camera_angle = 0  # For orbiting around player
-
-# Environment settings - More bustling
-tree_count = 300        # Increased trees
-rock_count = 150        # Increased rocks
-house_count = 30        # Added houses
-
-
-# Environment settings - More bustling
-tree_count = 300        # Increased trees
-rock_count = 150        # Increased rocks
-house_count = 30        # Added houses
-
-# Jungle environment
+# Environment
+tree_count = 300
+rock_count = 150
+house_count = 30
 trees = []
 rocks = []
 houses = []
