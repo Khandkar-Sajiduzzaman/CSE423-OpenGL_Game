@@ -2124,7 +2124,7 @@ def main():
     player_pos[1] = 0
     player_pos[2] = 100
     player_angle = 0
-    
+
     spawn_golden_keys()
     spawn_enemies_for_level()
     
