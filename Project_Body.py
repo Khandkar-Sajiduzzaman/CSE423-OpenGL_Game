@@ -1275,6 +1275,27 @@ def update_dash_mode():    #YASIN
         dash_cooldown -= delta_time
         if dash_cooldown <= 0:
             dash_cooldown = 0
+def update_fire_gun():
+    global fire_gun_cooldown, fire_gun_active
+    
+    if fire_gun_cooldown > 0:
+        fire_gun_cooldown -= delta_time
+        if fire_gun_cooldown <= 0:
+            fire_gun_cooldown = 0
+            fire_gun_active = False
+
+def update_player():
+    if is_dead or game_paused:
+        return
+    
+    update_dash_mode()
+    update_fire_gun()
+    
+    if check_boundary_collision(player_pos):
+        bounce_from_boundary(player_pos)           
+           
+
+
 
 # ==================== MAIN FUNCTION ====================
 def main():
