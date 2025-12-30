@@ -131,7 +131,6 @@ class EnemyProjectile:
         self.color = (1.0, 0.3, 0.0)
         self.damage = 1
         
-        # Calculate direction towards player
         dx = target_pos[0] - pos[0]
         dy = target_pos[1] - pos[1]
         dist = math.sqrt(dx*dx + dy*dy)
@@ -143,7 +142,6 @@ class EnemyProjectile:
             self.velocity_x = 0
             self.velocity_y = 0
         
-        # Projectile motion
         self.velocity_z = 200
         self.gravity = 300
         self.lifetime = 0
