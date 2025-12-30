@@ -1076,6 +1076,185 @@ def draw_boundary_walls():
         glPopMatrix()
 
 
+
+
+def draw_sky():
+    """Draw complete sky background covering entire viewport"""
+    sky_distance = BOUNDARY_SIZE * 3
+    
+    glDisable(GL_DEPTH_TEST)
+    
+    # Top layer - brightest
+    glBegin(GL_QUADS)
+    glColor3f(0.4, 0.7, 1.0)
+    glVertex3f(-sky_distance, -sky_distance, 3000)
+    glVertex3f(sky_distance, -sky_distance, 3000)
+    glVertex3f(sky_distance, sky_distance, 3000)
+    glVertex3f(-sky_distance, sky_distance, 3000)
+    glEnd()
+    
+    # Upper middle layer
+    glBegin(GL_QUADS)
+    glColor3f(0.5, 0.8, 1.0)
+    glVertex3f(-sky_distance, -sky_distance, 2000)
+    glVertex3f(sky_distance, -sky_distance, 2000)
+    glColor3f(0.4, 0.7, 1.0)
+    glVertex3f(sky_distance, sky_distance, 3000)
+    glVertex3f(-sky_distance, sky_distance, 3000)
+    glEnd()
+    
+    # Middle layer
+    glBegin(GL_QUADS)
+    glColor3f(0.6, 0.85, 1.0)
+    glVertex3f(-sky_distance, -sky_distance, 1000)
+    glVertex3f(sky_distance, -sky_distance, 1000)
+    glColor3f(0.5, 0.8, 1.0)
+    glVertex3f(sky_distance, sky_distance, 2000)
+    glVertex3f(-sky_distance, sky_distance, 2000)
+    glEnd()
+    
+    # Lower layer - connects to horizon
+    glBegin(GL_QUADS)
+    glColor3f(0.75, 0.9, 1.0)
+    glVertex3f(-sky_distance, -sky_distance, 400)
+    glVertex3f(sky_distance, -sky_distance, 400)
+    glColor3f(0.6, 0.85, 1.0)
+    glVertex3f(sky_distance, sky_distance, 1000)
+    glVertex3f(-sky_distance, sky_distance, 1000)
+    glEnd()
+    
+    # Horizon layer - fills gap
+    glBegin(GL_QUADS)
+    glColor3f(0.85, 0.95, 1.0)
+    glVertex3f(-sky_distance, -sky_distance, -100)
+    glVertex3f(sky_distance, -sky_distance, -100)
+    glColor3f(0.75, 0.9, 1.0)
+    glVertex3f(sky_distance, sky_distance, 400)
+    glVertex3f(-sky_distance, sky_distance, 400)
+    glEnd()
+    
+    glEnable(GL_DEPTH_TEST)
+    
+    # Sun
+    glPushMatrix()
+    glTranslatef(BOUNDARY_SIZE * 0.6, BOUNDARY_SIZE * 0.6, 1800)
+    glColor3f(1.0, 0.98, 0.7)
+    gluSphere(gluNewQuadric(), 120, 24, 24)
+    glPopMatrix()
+
+def create_tree_at(pos, size_factor=1.0):
+    tree_height = random.uniform(150, 250) * size_factor
+    trunk_height = tree_height * 0.6
+    crown_height = tree_height * 0.4
+    
+    crown_colors = [
+        (0.3, 0.9, 0.4),
+        (0.2, 0.95, 0.3),
+        (0.4, 0.85, 0.3),
+        (0.5, 0.9, 0.2),
+        (0.3, 0.8, 0.5),
+        (0.4, 0.9, 0.3)
+    ]
+    
+    trees.append({
+        'pos': pos,
+        'trunk_height': trunk_height,
+        'trunk_radius': random.uniform(10, 20) * size_factor,
+        'crown_radius': random.uniform(50, 80) * size_factor,
+        'crown_height': crown_height,
+        'trunk_color': (random.uniform(0.4, 0.6), random.uniform(0.3, 0.4), random.uniform(0.2, 0.3)),
+        'crown_color': random.choice(crown_colors),
+        'type': random.choice(['pine', 'round', 'palm', 'oak'])
+    })
+
+def create_house_at(pos):
+    house_height = random.uniform(80, 150)
+    house_width = random.uniform(60, 100)
+    house_depth = random.uniform(60, 100)
+    
+    house_colors = [
+        (0.9, 0.6, 0.5),
+        (0.7, 0.8, 0.9),
+        (0.8, 0.9, 0.7),
+        (0.9, 0.8, 0.6),
+        (0.8, 0.7, 0.9),
+        (0.6, 0.8, 0.8)
+    ]
+    
+    roof_colors = [
+        (0.6, 0.3, 0.2),
+        (0.5, 0.2, 0.1),
+        (0.3, 0.3, 0.3),
+        (0.4, 0.2, 0.1)
+    ]
+    
+    houses.append({
+        'pos': pos,
+        'height': house_height,
+        'width': house_width,
+        'depth': house_depth,
+        'color': random.choice(house_colors),
+        'roof_color': random.choice(roof_colors),
+        'rotation': random.uniform(0, 360)
+    })
+
+def create_jungle_environment():
+    global trees, rocks, houses
+    
+    trees.clear()
+    rocks.clear()
+    houses.clear()
+    
+    safe_boundary = BOUNDARY_SIZE - 300
+    
+    trees_per_side = 40
+    for i in range(trees_per_side):
+        x = -safe_boundary + (i * (2 * safe_boundary) / (trees_per_side - 1))
+        y = safe_boundary
+        create_tree_at([x, y, 0], size_factor=random.uniform(1.5, 2.5))
+        
+        y = -safe_boundary
+        create_tree_at([x, y, 0], size_factor=random.uniform(1.5, 2.5))
+        
+        x = safe_boundary
+        y = -safe_boundary + (i * (2 * safe_boundary) / (trees_per_side - 1))
+        create_tree_at([x, y, 0], size_factor=random.uniform(1.5, 2.5))
+        
+        x = -safe_boundary
+        create_tree_at([x, y, 0], size_factor=random.uniform(1.5, 2.5))
+    
+    for _ in range(tree_count):
+        x = random.randint(-safe_boundary + 100, safe_boundary - 100)
+        y = random.randint(-safe_boundary + 100, safe_boundary - 100)
+        create_tree_at([x, y, 0], size_factor=random.uniform(0.8, 1.8))
+    
+    for _ in range(rock_count):
+        x = random.randint(-safe_boundary + 100, safe_boundary - 100)
+        y = random.randint(-safe_boundary + 100, safe_boundary - 100)
+        rock_color = random.choice([
+            (0.8, 0.4, 0.2),
+            (0.6, 0.3, 0.7),
+            (0.3, 0.6, 0.8),
+            (0.7, 0.7, 0.3),
+            (0.4, 0.8, 0.4),
+            (0.9, 0.5, 0.8)
+        ])
+        rocks.append({
+            'pos': [x, y, 0],
+            'size': random.uniform(40, 100),
+            'color': rock_color,
+            'rotation': random.uniform(0, 360)
+        })
+    
+    for _ in range(house_count):
+        x = random.randint(-safe_boundary + 200, safe_boundary - 200)
+        y = random.randint(-safe_boundary + 200, safe_boundary - 200)
+        create_house_at([x, y, 0])
+
+
+#START UPDATING FUNCTIONS HERE
+
+
 # ==================== MAIN FUNCTION ====================
 def main():
     """Initialize and run the game."""
