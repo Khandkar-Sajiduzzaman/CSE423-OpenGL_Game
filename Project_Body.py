@@ -847,6 +847,169 @@ def update_golden_keys():
             player_score += 500
 
 #start from here lapii
+# ==================== DIAMOND DRAWING ====================
+def draw_diamond(diamond):
+    if diamond.collected:
+        return
+    
+    glPushMatrix()
+    glTranslatef(diamond.pos[0], diamond.pos[1], diamond.pos[2])
+    
+    glRotatef(diamond.rotation_angle, 0, 0, 1)
+    
+    pulse_size = 8.0 * math.sin(diamond.pulse)
+    size = diamond.radius + pulse_size
+    
+    glColor3f(*diamond.color)
+    
+    glBegin(GL_QUADS)
+    for i in range(4):
+        angle1 = i * 90
+        angle2 = (i + 1) * 90
+        x1 = size * 0.7 * math.cos(math.radians(angle1))
+        y1 = size * 0.7 * math.sin(math.radians(angle1))
+        x2 = size * 0.7 * math.cos(math.radians(angle2))
+        y2 = size * 0.7 * math.sin(math.radians(angle2))
+        
+        glVertex3f(0, 0, size)
+        glVertex3f(x1, y1, 0)
+        glVertex3f(x2, y2, 0)
+        glVertex3f(0, 0, size)
+    
+    for i in range(4):
+        angle1 = i * 90
+        angle2 = (i + 1) * 90
+        x1 = size * 0.7 * math.cos(math.radians(angle1))
+        y1 = size * 0.7 * math.sin(math.radians(angle1))
+        x2 = size * 0.7 * math.cos(math.radians(angle2))
+        y2 = size * 0.7 * math.sin(math.radians(angle2))
+        
+        glVertex3f(0, 0, -size)
+        glVertex3f(x2, y2, 0)
+        glVertex3f(x1, y1, 0)
+        glVertex3f(0, 0, -size)
+    glEnd()
+    
+    glPopMatrix()
+#BULLET START FROM HERE 
+# ==================== BULLET DRAWING ====================
+def draw_bullet(bullet):
+    if not bullet.alive:
+        return
+    
+    glPushMatrix()
+    glTranslatef(bullet.pos[0], bullet.pos[1], bullet.pos[2])
+    
+    if bullet.type == 2:
+        glColor3f(1.0, 0.3, 0.0)
+        gluSphere(gluNewQuadric(), bullet.radius, 16, 16)
+        
+        glColor3f(1.0, 0.6, 0.0)
+        gluSphere(gluNewQuadric(), bullet.radius * 0.7, 12, 12)
+        
+        glColor3f(1.0, 1.0, 0.5)
+        gluSphere(gluNewQuadric(), bullet.radius * 0.4, 10, 10)
+        
+        glColor3f(1.0, 0.5, 0.0)
+        glPushMatrix()
+        glRotatef(-bullet.angle, 0, 0, 1)
+        glRotatef(90, 0, 1, 0)
+        gluCylinder(gluNewQuadric(), bullet.radius * 0.8, 0, bullet.radius * 2, 8, 8)
+        glPopMatrix()
+    else:
+        glColor3f(*bullet.color)
+        gluSphere(gluNewQuadric(), bullet.radius, 10, 10)
+    
+    glPopMatrix()
+
+#ENVIRONMENT#+++++
+# ==================== ENVIRONMENT ====================
+def draw_tree(tree):
+    glPushMatrix()
+    glTranslatef(tree['pos'][0], tree['pos'][1], tree['pos'][2])
+    
+    glColor3f(*tree['trunk_color'])
+    gluCylinder(gluNewQuadric(), tree['trunk_radius'], tree['trunk_radius'] * 0.7, 
+                tree['trunk_height'], 12, 12)
+    
+    glColor3f(*tree['crown_color'])
+    glTranslatef(0, 0, tree['trunk_height'])
+    
+    if tree['type'] == 'pine':
+        glRotatef(-90, 1, 0, 0)
+        gluCylinder(gluNewQuadric(), tree['crown_radius'], 0, tree['crown_height'], 12, 12)
+    elif tree['type'] == 'palm':
+        gluSphere(gluNewQuadric(), tree['crown_radius'] * 0.5, 10, 10)
+        for i in range(6):
+            glPushMatrix()
+            glRotatef(i * 60, 0, 0, 1)
+            glTranslatef(tree['crown_radius'] * 0.7, 0, 0)
+            glRotatef(-90, 1, 0, 0)
+            gluCylinder(gluNewQuadric(), 10, 0, tree['crown_height'] * 0.7, 6, 6)
+            glPopMatrix()
+    else:
+        gluSphere(gluNewQuadric(), tree['crown_radius'], 12, 12)
+    
+    glPopMatrix()
+
+def draw_rock(rock):
+    glPushMatrix()
+    glTranslatef(rock['pos'][0], rock['pos'][1], rock['pos'][2])
+    glRotatef(rock['rotation'], 0, 1, 0)
+    
+    glColor3f(*rock['color'])
+    
+    gluSphere(gluNewQuadric(), rock['size'], 10, 10)
+    
+    glPushMatrix()
+    glTranslatef(rock['size'] * 0.3, rock['size'] * 0.2, rock['size'] * 0.4)
+    gluSphere(gluNewQuadric(), rock['size'] * 0.6, 8, 8)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(-rock['size'] * 0.4, rock['size'] * 0.3, -rock['size'] * 0.3)
+    gluSphere(gluNewQuadric(), rock['size'] * 0.5, 8, 8)
+    glPopMatrix()
+    
+    glPopMatrix()
+
+def draw_house(house):
+    glPushMatrix()
+    glTranslatef(house['pos'][0], house['pos'][1], house['pos'][2])
+    glRotatef(house['rotation'], 0, 0, 1)
+    
+    glColor3f(*house['color'])
+    glPushMatrix()
+    glScalef(house['width'], house['depth'], house['height'])
+    glutSolidCube(1)
+    glPopMatrix()
+    
+    glColor3f(*house['roof_color'])
+    glPushMatrix()
+    glTranslatef(0, 0, house['height'])
+    glRotatef(-90, 1, 0, 0)
+    gluCylinder(gluNewQuadric(), house['width'] * 0.8, 0, house['height'] * 0.5, 4, 4)
+    glPopMatrix()
+    
+    glColor3f(0.4, 0.2, 0.1)
+    glPushMatrix()
+    glTranslatef(0, house['depth'] * 0.5 + 1, 0)
+    glScalef(0.3, 0.1, 0.5)
+    glutSolidCube(house['height'])
+    glPopMatrix()
+    
+    glColor3f(0.9, 0.9, 1.0)
+    for i in [-1, 1]:
+        for j in [-0.3, 0.3]:
+            glPushMatrix()
+            glTranslatef(i * house['width'] * 0.3, house['depth'] * 0.5 + 1, j * house['height'] * 0.3)
+            glScalef(0.2, 0.1, 0.2)
+            glutSolidCube(house['height'])
+            glPopMatrix()
+    
+    glPopMatrix()
+
+#DRAW_GROUND STARTS FROM HERE
 
 
 # ==================== MAIN FUNCTION ====================
