@@ -1294,7 +1294,38 @@ def update_player():
     if check_boundary_collision(player_pos):
         bounce_from_boundary(player_pos)           
            
-
+def update_enemies():
+    global enemies_killed_this_level, player_score
+    
+    if game_paused:
+        return
+    
+    for enemy in enemies[:]:
+        if not enemy.alive:
+            continue
+        
+        if enemy.damage_timer > 0:
+            enemy.damage_timer -= delta_time
+        
+        if enemy.type == 1:
+            enemy.patrol_angle += enemy.patrol_speed * delta_time
+            enemy.patrol_angle = normalize_angle(enemy.patrol_angle)
+            
+            enemy.pos[0] = enemy.patrol_center[0] + enemy.patrol_radius * math.cos(math.radians(enemy.patrol_angle))
+            enemy.pos[1] = enemy.patrol_center[1] + enemy.patrol_radius * math.sin(math.radians(enemy.patrol_angle))
+        
+        elif enemy.type == 2:
+            dx = player_pos[0] - enemy.pos[0]
+            dy = player_pos[1] - enemy.pos[1]
+            dist = math.sqrt(dx*dx + dy*dy)
+            
+            if dist > 50:
+                enemy.pos[0] += (dx/dist) * enemy.speed * delta_time
+                enemy.pos[1] += (dy/dist) * enemy.speed * delta_time
+                enemy.angle = math.degrees(math.atan2(dy, dx))
+        
+        if check_boundary_collision(enemy.pos):
+            bounce_from_boundary(enemy.pos)
 
 
 # ==================== MAIN FUNCTION ====================
