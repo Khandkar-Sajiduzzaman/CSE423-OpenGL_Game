@@ -699,6 +699,29 @@ def draw_enemy(enemy):
     elif enemy.type == 2:
         draw_chasing_enemy(enemy)
 ###ENEMY SHOOTING STARTS HERE
+def update_enemy_shooting():
+    global enemy_projectiles
+    
+    if game_paused or is_dead:
+        return
+    
+    for enemy in enemies:
+        if not enemy.alive or enemy.type != 0:
+            continue
+        
+        enemy.shoot_cooldown -= delta_time
+        
+        if enemy.shoot_cooldown <= 0:
+            distance_to_player = distance_2d(enemy.pos, player_pos)
+            if distance_to_player < 1500:
+                projectile_start = enemy.pos.copy()
+                projectile_start[2] = enemy.pos[2] + 90
+                
+                projectile = EnemyProjectile(projectile_start, player_pos)
+                enemy_projectiles.append(projectile)
+                
+                enemy.shoot_cooldown = enemy.shoot_interval
+#SAJID START FROM HERE
 
 
 # ==================== MAIN FUNCTION ====================
