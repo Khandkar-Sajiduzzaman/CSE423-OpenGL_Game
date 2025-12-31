@@ -371,7 +371,7 @@ def update_cheat_mode():
     cheat_target_enemy = find_closest_enemy()
     
     if cheat_target_enemy and cheat_target_enemy.alive:
-        enemy_reached = cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=2)
+        boundary_hit = not cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=2)
         cheat_auto_shoot()
         shoot_fire_gun()
 
