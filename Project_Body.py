@@ -320,27 +320,17 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
         player_pos[1] += move_speed * math.cos(math.radians(player_angle))
         
         if check_boundary_collision(player_pos):
-            
+            player_angle += 180 
+            player_angle = normalize_angle(player_angle) 
             if player_pos[0] > BOUNDARY_SIZE:
                 player_pos[0] = BOUNDARY_SIZE - 200
-                player_angle += 180 
-                
             elif player_pos[0] < -BOUNDARY_SIZE:
-                player_pos[0] = -BOUNDARY_SIZE + 200
-                player_angle += 180 
-               
+                player_pos[0] = -BOUNDARY_SIZE + 200    
             if player_pos[1] > BOUNDARY_SIZE:
                 player_pos[1] = BOUNDARY_SIZE - 200
-                player_angle += 180 
        
             elif player_pos[1] < -BOUNDARY_SIZE:
                 player_pos[1] = -BOUNDARY_SIZE + 200
-                player_angle += 180 
-            
-            player_angle = normalize_angle(player_angle) 
-            
-             
-            
                     
         return True
     
