@@ -425,7 +425,7 @@ def spawn_key_guardians():
             enemies.append(enemy)
         
         num_type1 = 2 + current_level // 2
-        for _ in range(num_type1):
+        for i in range(num_type1):
             angle = random.uniform(0, 360)
             distance = random.uniform(300, 600)
             x = key.pos[0] + distance * math.cos(math.radians(angle))
@@ -449,7 +449,7 @@ def spawn_enemies_for_level():
     num_chasers = 3 + current_level * 2
     safe_boundary = BOUNDARY_SIZE - 200
     
-    for _ in range(num_chasers):
+    for i in range(num_chasers):
         angle = random.uniform(0, 360)
         distance = random.uniform(800, safe_boundary)
         x = distance * math.cos(math.radians(angle))
@@ -726,9 +726,9 @@ def draw_stationary_enemy(enemy):
         glPopMatrix()
     
     draw_enemy_health_bar(enemy)
-    glPopMatrix() # YASIN START FROM HERE
+    glPopMatrix() 
 
-def draw_patrolling_enemy(enemy):   #YASIN here
+def draw_patrolling_enemy(enemy):   
     glPushMatrix()
     glTranslatef(enemy.pos[0], enemy.pos[1], enemy.pos[2])
     
@@ -834,7 +834,7 @@ def draw_enemy(enemy):
         draw_patrolling_enemy(enemy)
     elif enemy.type == 2:
         draw_chasing_enemy(enemy)
-###ENEMY SHOOTING STARTS HERE
+
 def update_enemy_shooting():
     global enemy_projectiles
     
@@ -982,7 +982,7 @@ def update_golden_keys():
             keys_collected += 1
             player_score += 500
 
-#start from here lapii
+
 # ==================== DIAMOND DRAWING ====================
 def draw_diamond(diamond):
     if diamond.collected:
@@ -1027,7 +1027,7 @@ def draw_diamond(diamond):
     glEnd()
     
     glPopMatrix()
-#BULLET START FROM HERE 
+#BULLET 
 # ==================== BULLET DRAWING ====================
 def draw_bullet(bullet):
     if not bullet.alive:
@@ -1046,7 +1046,7 @@ def draw_bullet(bullet):
     
     glPopMatrix()
 
-#ENVIRONMENT#+++++
+
 # ==================== ENVIRONMENT ====================
 def draw_tree(tree):
     glPushMatrix()
@@ -1133,7 +1133,7 @@ def draw_house(house):
     
     glPopMatrix()
 
-#DRAW_GROUND STARTS FROM HERE
+#DRAW_GROUND
 def draw_ground():
     glColor3f(0.3, 0.85, 0.4)
     glBegin(GL_QUADS)
@@ -1217,7 +1217,7 @@ def draw_sky():
     glVertex3f(-sky_distance, sky_distance, 3000)
     glEnd()
     
-    # Upper middle layer
+    # Upper mid layer
     glBegin(GL_QUADS)
     glColor3f(0.5, 0.8, 1.0)
     glVertex3f(-sky_distance, -sky_distance, 2000)
@@ -1227,7 +1227,7 @@ def draw_sky():
     glVertex3f(-sky_distance, sky_distance, 3000)
     glEnd()
     
-    # Middle layer
+    # Mid layer
     glBegin(GL_QUADS)
     glColor3f(0.6, 0.85, 1.0)
     glVertex3f(-sky_distance, -sky_distance, 1000)
@@ -1370,7 +1370,7 @@ def create_jungle_environment():
             'rotation': random.uniform(0, 360)
         })
     
-    for _ in range(house_count):
+    for i in range(house_count):
         x = random.randint(-safe_boundary + 200, safe_boundary - 200)
         y = random.randint(-safe_boundary + 200, safe_boundary - 200)
         create_house_at([x, y, 0])
@@ -1386,7 +1386,7 @@ def update_delta_time():
         delta_time = 0.016
 
 
-def update_dash_mode():    #YASIN
+def update_dash_mode():   
     global dash_timer, dash_mode, dash_cooldown
     
     if dash_timer > 0:
@@ -1502,7 +1502,7 @@ def update_bullets():
 
 
 
-def update_diamonds():   #YASIN
+def update_diamonds():  
     global last_diamond_spawn, player_score, player_health, falling_diamonds, ground_diamonds
     
     if game_paused:
