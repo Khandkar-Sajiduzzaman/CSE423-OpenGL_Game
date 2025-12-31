@@ -248,7 +248,7 @@ class Bullet:
             self.trail = []
 
 bullets = []
-# ==================== UTILITY FUNCTIONS ==================== #rafi
+# ==================== UTILITY FUNCTIONS ====================
 def distance_2d(pos1, pos2):
     return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
 
@@ -375,7 +375,7 @@ def update_cheat_mode():
         cheat_auto_shoot()
         shoot_fire_gun()
 
-# ==================== LEVEL MANAGEMENT ==================== YASIN
+#LEVEL MANAGEMENT
 def spawn_golden_keys():
 
     global golden_keys
@@ -408,7 +408,7 @@ def spawn_key_guardians():
     """Spawn Type 0 and Type 1 enemies around each key location"""
     for key in golden_keys:
         num_type0 = 3 + current_level
-        for _ in range(num_type0):
+        for i in range(num_type0):
             angle = random.uniform(0, 360)
             distance = random.uniform(200, 400)
             x = key.pos[0] + distance * math.cos(math.radians(angle))
@@ -649,7 +649,6 @@ def draw_cannon():
     glPopMatrix()
 
 
-#Rafi Start from here
 # ==================== ENEMY DRAWING ====================
 def draw_enemy_health_bar(enemy):
     if enemy.health < enemy.max_health:
@@ -1347,12 +1346,12 @@ def create_jungle_environment():
         x = -safe_boundary
         create_tree_at([x, y, 0], size_factor=random.uniform(1.5, 2.5))
     
-    for _ in range(tree_count):
+    for i in range(tree_count):
         x = random.randint(-safe_boundary + 100, safe_boundary - 100)
         y = random.randint(-safe_boundary + 100, safe_boundary - 100)
         create_tree_at([x, y, 0], size_factor=random.uniform(0.8, 1.8))
     
-    for _ in range(rock_count):
+    for i in range(rock_count):
         x = random.randint(-safe_boundary + 100, safe_boundary - 100)
         y = random.randint(-safe_boundary + 100, safe_boundary - 100)
         rock_color = random.choice([
@@ -1842,7 +1841,7 @@ def draw_level_ui():
                       GLUT_BITMAP_HELVETICA_18, (1.0, 0.5, 0.0))
 
 
-#input HANDLERS
+
 
 # ==================== INPUT HANDLERS ====================
 def activate_dash():
@@ -1980,7 +1979,7 @@ def mouseListener(button, state, x, y):
     if button == GLUT_LEFT_BUTTON:
         shoot_pistol()
 
-#yasiN
+
 
 # ==================== DISPLAY ====================
 def display():
@@ -2145,7 +2144,7 @@ def idle():
     
     glutPostRedisplay()
 
-# ==================== MAIN ====================
+
 def main():
     glutInit()
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
