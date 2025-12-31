@@ -1047,21 +1047,9 @@ def draw_bullet(bullet):
     glTranslatef(bullet.pos[0], bullet.pos[1], bullet.pos[2])
     
     if bullet.type == 2:
-        glColor3f(1.0, 0.3, 0.0)
+        glColor3f(1.0, 0.4, 0.0)
         gluSphere(gluNewQuadric(), bullet.radius, 16, 16)
         
-        glColor3f(1.0, 0.6, 0.0)
-        gluSphere(gluNewQuadric(), bullet.radius * 0.7, 12, 12)
-        
-        glColor3f(1.0, 1.0, 0.5)
-        gluSphere(gluNewQuadric(), bullet.radius * 0.4, 10, 10)
-        
-        glColor3f(1.0, 0.5, 0.0)
-        glPushMatrix()
-        glRotatef(-bullet.angle, 0, 0, 1)
-        glRotatef(90, 0, 1, 0)
-        gluCylinder(gluNewQuadric(), bullet.radius * 0.8, 0, bullet.radius * 2, 8, 8)
-        glPopMatrix()
     else:
         glColor3f(*bullet.color)
         gluSphere(gluNewQuadric(), bullet.radius, 10, 10)
