@@ -267,14 +267,14 @@ def check_boundary_collision(pos):
 
 def bounce_from_boundary(pos):
     if pos[0] > BOUNDARY_SIZE:
-        pos[0] = BOUNDARY_SIZE - 10
+        pos[0] = BOUNDARY_SIZE - 30
     elif pos[0] < -BOUNDARY_SIZE:
-        pos[0] = -BOUNDARY_SIZE + 10
+        pos[0] = -BOUNDARY_SIZE + 30
     
     if pos[1] > BOUNDARY_SIZE:
-        pos[1] = BOUNDARY_SIZE - 10
+        pos[1] = BOUNDARY_SIZE - 30
     elif pos[1] < -BOUNDARY_SIZE:
-        pos[1] = -BOUNDARY_SIZE + 10
+        pos[1] = -BOUNDARY_SIZE + 30
 
 # ==================== CHEAT MODE FUNCTIONS ==================== 
 def find_closest_enemy():
@@ -297,17 +297,18 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
     dy = target_pos[1] - player_pos[1]
     dist = math.sqrt(dx*dx + dy*dy)
     
-    if dist > 50:
+    if dist > 10:
         target_angle = math.degrees(math.atan2(dx, dy))
         angle_diff = normalize_angle(target_angle - player_angle)
         if angle_diff > 180:
             angle_diff -= 360
         
         rotation_speed = 360 * delta_time
+        
         if abs(angle_diff) < rotation_speed:
             player_angle = target_angle
         else:
-            if angle_diff > 0:
+            if angle_diff > rotation_speed:
                 player_angle += rotation_speed  
             else:
                 player_angle -= rotation_speed
@@ -319,14 +320,33 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
         player_pos[1] += move_speed * math.cos(math.radians(player_angle))
         
         if check_boundary_collision(player_pos):
-            bounce_from_boundary(player_pos)
-        
+            if player_pos[0] > BOUNDARY_SIZE:
+                player_pos[0] = BOUNDARY_SIZE - 200
+                player_angle += 180 
+                player_angle = normalize_angle(player_angle) 
+                
+            elif player_pos[0] < -BOUNDARY_SIZE:
+                player_pos[0] = -BOUNDARY_SIZE + 200
+                player_angle += 180 
+                player_angle = normalize_angle(player_angle) 
+            
+            if player_pos[1] > BOUNDARY_SIZE:
+                player_pos[1] = BOUNDARY_SIZE - 200
+                player_angle += 180 
+                player_angle = normalize_angle(player_angle) 
+            elif player_pos[1] < -BOUNDARY_SIZE:
+                player_pos[1] = -BOUNDARY_SIZE + 200
+                player_angle += 180 
+                player_angle = normalize_angle(player_angle) 
+            
+             
+            
+                    
         return True
     
     return False
 
 def cheat_auto_shoot():
-    """Automatically shoot at the target enemy"""
     global cheat_shoot_cooldown
     
     if cheat_shoot_cooldown <= 0 and cheat_target_enemy and cheat_target_enemy.alive:
@@ -349,7 +369,7 @@ def cheat_auto_shoot():
         cheat_shoot_cooldown = cheat_shoot_interval
 
 def update_cheat_mode():
-    """Main cheat mode update logic"""
+    
     global cheat_target_enemy, cheat_shoot_cooldown
     
     if not cheat_mode or is_dead or game_paused:
@@ -361,7 +381,7 @@ def update_cheat_mode():
     cheat_target_enemy = find_closest_enemy()
     
     if cheat_target_enemy and cheat_target_enemy.alive:
-        enemy_reached = cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=1.5)
+        enemy_reached = cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=2)
         cheat_auto_shoot()
         
         if distance_2d(player_pos, cheat_target_enemy.pos) < 300:
