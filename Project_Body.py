@@ -5,7 +5,7 @@ import math
 import time
 import random
 
-# ==================== GAME CONSTANTS & VARIABLES =================
+#  GAME CONSTANTS & VARIABLES 
 WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 1000
 
@@ -34,13 +34,13 @@ fire_gun_active = False
 fire_gun_cooldown = 0
 fire_gun_cooldown_duration = 1.0
 
-# ==================== CHEAT MODE ====================
+#  CHEAT MODE 
 cheat_mode = False
 cheat_target_enemy = None
 cheat_shoot_cooldown = 0
 cheat_shoot_interval = 0.3
 
-# ==================== CAMERA SYSTEM ====================
+#  CAMERA SYSTEM 
 # Camera Mode: 0 = Follow Mode (90°), 1 = Free Mode (120°)
 camera_mode = 0
 
@@ -54,7 +54,7 @@ free_camera_pos = [0, -800, 500]
 free_camera_move_speed = 300
 free_fov = 120
 
-# ==================== LEVEL SYSTEM ====================
+#  LEVEL SYSTEM
 current_level = 1
 max_level = 5
 level_complete = False
@@ -108,7 +108,7 @@ regular_diamond_score = 10
 special_diamond_health = 1
 diamond_ground_lifetime = 10
 
-# ==================== GOLDEN KEYS ====================
+# GOLDEN KEYS 
 class GoldenKey:        
     def __init__(self, pos):
         self.pos = pos.copy()
@@ -122,7 +122,7 @@ class GoldenKey:
 
 golden_keys = []
 
-# ==================== ENEMIES ====================
+#  ENEMIES 
 class Enemy:
     def __init__(self, enemy_type, pos):
         self.type = enemy_type
@@ -171,7 +171,7 @@ class Enemy:
 
 enemies = []
 
-# ==================== ENEMY PROJECTILES ====================
+#  ENEMY PROJECTILES 
 class EnemyProjectile:
     def __init__(self, pos, target_pos):
         self.pos = pos.copy()
@@ -198,7 +198,7 @@ class EnemyProjectile:
 
 enemy_projectiles = []
 
-# ==================== DIAMONDS ====================
+#  DIAMONDS 
 class Diamond:
     def __init__(self, pos, diamond_type=0):
         self.pos = pos.copy()
@@ -218,7 +218,7 @@ class Diamond:
         else:
             self.color = (1.0, 0.84, 0.0)
 
-# ==================== BULLETS ====================
+#  BULLETS 
 class Bullet:
     def __init__(self, pos, angle, bullet_type=0):
         self.pos = pos.copy()
@@ -248,7 +248,7 @@ class Bullet:
             self.trail = []
 
 bullets = []
-# ==================== UTILITY FUNCTIONS ====================
+#  UTILITY FUNCTIONS
 def distance_2d(pos1, pos2):
     return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
 
@@ -276,7 +276,7 @@ def bounce_from_boundary(pos):
     elif pos[1] < -BOUNDARY_SIZE:
         pos[1] = -BOUNDARY_SIZE + 30
 
-# ==================== CHEAT MODE FUNCTIONS ==================== 
+#  CHEAT MODE FUNCTIONS 
 def find_closest_enemy():
     closest_enemy = None
     min_distance = float('inf')
@@ -501,8 +501,8 @@ def update_level_transition():
         if level_transition_timer <= 0:
             advance_level()
 
-# ==================== DRAWING FUNCTIONS ====================
-# ==================== PLAYER DRAWING ====================
+#  DRAWING FUNCTIONS
+# PLAYER DRAWING
 def draw_player():
     """Draw player with TWO GUNS"""
     if is_dead:
@@ -649,7 +649,7 @@ def draw_cannon():
     glPopMatrix()
 
 
-# ==================== ENEMY DRAWING ====================
+#  ENEMY DRAWING
 def draw_enemy_health_bar(enemy):
     if enemy.health < enemy.max_health:
         glPushMatrix()
@@ -915,7 +915,7 @@ def update_enemy_projectiles():
                 player_health = 0
             continue
 
-# ==================== GOLDEN KEY DRAWING ====================
+#  GOLDEN KEY DRAWING 
 def draw_golden_key(key):
     if key.collected:
         return
@@ -982,7 +982,7 @@ def update_golden_keys():
             player_score += 500
 
 
-# ==================== DIAMOND DRAWING ====================
+#  DIAMOND DRAWING
 def draw_diamond(diamond):
     if diamond.collected:
         return
@@ -1027,7 +1027,7 @@ def draw_diamond(diamond):
     
     glPopMatrix()
 #BULLET 
-# ==================== BULLET DRAWING ====================
+#  BULLET DRAWING 
 def draw_bullet(bullet):
     if not bullet.alive:
         return
@@ -1046,7 +1046,7 @@ def draw_bullet(bullet):
     glPopMatrix()
 
 
-# ==================== ENVIRONMENT ====================
+# ENVIRONMENT 
 def draw_tree(tree):
     glPushMatrix()
     glTranslatef(tree['pos'][0], tree['pos'][1], tree['pos'][2])
@@ -1375,7 +1375,7 @@ def create_jungle_environment():
         create_house_at([x, y, 0])
 
 
-# ==================== UPDATE FUNCTIONS ====================
+#  UPDATE FUNCTIONS
 def update_delta_time():
     global last_frame_time, delta_time
     current_time = time.perf_counter()
@@ -1589,7 +1589,7 @@ def check_enemy_collisions():
                 player_health = 0
             break
 
-# ==================== CAMERA SYSTEM ====================
+# CAMERA SYSTEM 
 def setup_camera():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -1633,7 +1633,7 @@ def toggle_camera_mode():
         free_camera_pos[2] = player_pos[2] + follow_camera_height
 
 
-# ==================== UI DRAWING ====================
+# UI DRAWING
 def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18, color=(1, 1, 1)):
     glDisable(GL_DEPTH_TEST)
     
@@ -1843,7 +1843,7 @@ def draw_level_ui():
 
 
 
-# ==================== INPUT HANDLERS ====================
+#  INPUT HANDLERS
 def activate_dash():
     global dash_mode, dash_timer, dash_cooldown
     
@@ -1981,7 +1981,7 @@ def mouseListener(button, state, x, y):
 
 
 
-# ==================== DISPLAY ====================
+#  DISPLAY 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
