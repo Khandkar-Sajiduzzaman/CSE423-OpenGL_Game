@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import GLUT_BITMAP_HELVETICA_18, GLUT_BITMAP_TIMES_ROMAN_24
 import math
 import time
 import random
