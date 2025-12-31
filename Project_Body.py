@@ -2173,7 +2173,7 @@ def main():
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"GOLDEN KEY QUEST - CANNON ONE-SHOTS!")
+    glutCreateWindow(b"GOLDEN KEY QUEST")
     
     glEnable(GL_DEPTH_TEST)
     
