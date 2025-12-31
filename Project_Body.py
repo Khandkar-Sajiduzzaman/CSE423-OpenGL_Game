@@ -5,7 +5,7 @@ import math
 import time
 import random
 
-# ==================== GAME CONSTANTS & VARIABLES ====================
+# ==================== GAME CONSTANTS & VARIABLES =================
 WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 1000
 
