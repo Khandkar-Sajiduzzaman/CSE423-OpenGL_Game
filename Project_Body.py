@@ -278,7 +278,6 @@ def bounce_from_boundary(pos):
 
 # ==================== CHEAT MODE FUNCTIONS ==================== 
 def find_closest_enemy():
-    """Find the closest alive enemy to the player"""
     closest_enemy = None
     min_distance = float('inf')
     
@@ -292,9 +291,8 @@ def find_closest_enemy():
     return closest_enemy
 
 def cheat_move_towards(target_pos, speed_multiplier=1.0):
-    """Move player towards a target position smoothly"""
-    global player_angle
     
+    global player_angle
     dx = target_pos[0] - player_pos[0]
     dy = target_pos[1] - player_pos[1]
     dist = math.sqrt(dx*dx + dy*dy)
@@ -309,7 +307,10 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
         if abs(angle_diff) < rotation_speed:
             player_angle = target_angle
         else:
-            player_angle += rotation_speed if angle_diff > 0 else -rotation_speed
+            if angle_diff > 0:
+                player_angle += rotation_speed  
+            else:
+                player_angle -= rotation_speed
         
         player_angle = normalize_angle(player_angle)
         
