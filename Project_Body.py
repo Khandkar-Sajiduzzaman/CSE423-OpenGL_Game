@@ -10,10 +10,10 @@ WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 1000
 
 # Delta time variables
-last_frame_time = time.time()
+last_frame_time = time.perf_counter()
 delta_time = 0.016
 
-# Player settings - FASTER MOVEMENT
+# Player settings 
 player_pos = [0, 0, 100]
 player_angle = 0
 player_speed = 600
@@ -92,15 +92,15 @@ BOUNDARY_SIZE = ARENA_SIZE - 400
 GROUND_Z = 0
 
 # Environment
-tree_count = 300
-rock_count = 150
+tree_count = 200
+rock_count = 100
 house_count = 30
 trees = []
 rocks = []
 houses = []
 
 # Diamonds
-last_diamond_spawn = time.time()
+last_diamond_spawn = time.perf_counter()
 diamond_spawn_interval = 4.0
 ground_diamonds = []
 falling_diamonds = []
@@ -205,10 +205,10 @@ class Diamond:
         self.type = diamond_type
         self.fall_speed = random.uniform(80, 120)
         self.collected = False
-        self.spawn_time = time.time()
+        self.spawn_time = time.perf_counter()
         self.radius = 75
         self.pulse = 0.0
-        self.pulse_speed = 5.0
+        self.pulse_speed = 4.0
         self.on_ground = False
         self.ground_time = 0
         self.rotation_angle = 0.0
@@ -236,24 +236,16 @@ class Bullet:
             self.color = (1.0, 1.0, 0.0)
             self.trail = []
         
-        # Type 2: Cannon (5 DAMAGE - ONE-SHOTS ALL ENEMIES, short range, arc trajectory)
+        # Type 2: Cannon 
         elif bullet_type == 2:
             self.speed = 450
             self.radius = 30
             self.max_distance = 800
-            self.damage = 5  # HIGHEST DAMAGE - ONE-SHOT KILL
+            self.damage = 3
             self.color = (1.0, 0.3, 0.0)
-            self.gravity = 200
-            self.velocity_z = 250
+            self.gravity = 300
+            self.velocity_z = 350
             self.trail = []
-        
-        # Default fallback
-        else:
-            self.speed = 400
-            self.radius = 20
-            self.max_distance = 800
-            self.damage = 1
-            self.color = (1.0, 0.5, 0.0)
 
 bullets = []
 # ==================== UTILITY FUNCTIONS ==================== #rafi
@@ -971,7 +963,7 @@ def update_golden_keys():
         if key.collected:
             continue
         
-        key.hover_offset = 20 * math.sin(key.hover_speed * time.time())
+        key.hover_offset = 20 * math.sin(key.hover_speed * time.perf_counter())
         key.rotation_angle += 60 * delta_time
         key.rotation_angle = normalize_angle(key.rotation_angle)
         key.glow_pulse += 3 * delta_time
@@ -1390,7 +1382,7 @@ def create_jungle_environment():
 # ==================== UPDATE FUNCTIONS ====================
 def update_delta_time():
     global last_frame_time, delta_time
-    current_time = time.time()
+    current_time = time.perf_counter()
     delta_time = current_time - last_frame_time
     last_frame_time = current_time
     if delta_time > 0.1:
@@ -1519,7 +1511,7 @@ def update_diamonds():   #YASIN
     if game_paused:
         return
     
-    current_time = time.time()
+    current_time = time.perf_counter()
     
     if current_time - last_diamond_spawn > diamond_spawn_interval and not is_dead:
         x = player_pos[0] + random.randint(-500, 500)
@@ -1685,19 +1677,20 @@ def draw_health_bar():
     
     glColor3f(0.0, 0.0, 0.0)
     glBegin(GL_QUADS)
-    glVertex2f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 65)
-    glVertex2f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 65)
-    glVertex2f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 25)
-    glVertex2f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 25)
+    glVertex3f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 65, 0)  
+    glVertex3f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 65, 0)  
+    glVertex3f(WINDOW_WIDTH//2 + 155, WINDOW_HEIGHT - 25, 0)  
+    glVertex3f(WINDOW_WIDTH//2 - 155, WINDOW_HEIGHT - 25, 0)  
     glEnd()
     
     glColor3f(0.15, 0.15, 0.15)
     glBegin(GL_QUADS)
-    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 60)
-    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 60)
-    glVertex2f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 30)
-    glVertex2f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 30)
+    glVertex3f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 60, 0)  
+    glVertex3f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 60, 0)  
+    glVertex3f(WINDOW_WIDTH//2 + 150, WINDOW_HEIGHT - 30, 0)  
+    glVertex3f(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 30, 0)  
     glEnd()
+    
     
     segment_width = 50
     spacing = 5
@@ -1714,11 +1707,12 @@ def draw_health_bar():
             glColor3f(0.3, 0.3, 0.3)
         
         glBegin(GL_QUADS)
-        glVertex2f(segment_x, segment_y)
-        glVertex2f(segment_x + segment_width, segment_y)
-        glVertex2f(segment_x + segment_width, segment_y + 20)
-        glVertex2f(segment_x, segment_y + 20)
+        glVertex3f(segment_x, segment_y, 0)  
+        glVertex3f(segment_x + segment_width, segment_y, 0)  
+        glVertex3f(segment_x + segment_width, segment_y + 20, 0)  
+        glVertex3f(segment_x, segment_y + 20, 0)  
         glEnd()
+    
     
     glPopMatrix()
     glMatrixMode(GL_PROJECTION)
@@ -1745,10 +1739,10 @@ def draw_minimap():
     
     glColor3f(0.1, 0.1, 0.1)
     glBegin(GL_QUADS)
-    glVertex2f(map_x, map_y)
-    glVertex2f(map_x + map_size, map_y)
-    glVertex2f(map_x + map_size, map_y + map_size)
-    glVertex2f(map_x, map_y + map_size)
+    glVertex3f(map_x, map_y, 0)  
+    glVertex3f(map_x + map_size, map_y, 0)
+    glVertex3f(map_x + map_size, map_y + map_size, 0)
+    glVertex3f(map_x, map_y + map_size, 0)
     glEnd()
     
     # Golden keys on minimap
@@ -1763,7 +1757,7 @@ def draw_minimap():
                 glColor3f(1.0, 0.84, 0.0)
                 glPointSize(15)
                 glBegin(GL_POINTS)
-                glVertex2f(key_map_x, key_map_y)
+                glVertex3f(key_map_x, key_map_y, 0)
                 glEnd()
     
     player_map_x = map_x + (player_pos[0] + BOUNDARY_SIZE) / (2 * BOUNDARY_SIZE) * map_size
@@ -1775,7 +1769,7 @@ def draw_minimap():
     glColor3f(0.0, 1.0, 0.0)
     glPointSize(12)
     glBegin(GL_POINTS)
-    glVertex2f(player_map_x, player_map_y)
+    glVertex3f(player_map_x, player_map_y, 0)
     glEnd()
     
     for enemy in enemies:
@@ -1798,7 +1792,7 @@ def draw_minimap():
                 
                 glPointSize(point_size)
                 glBegin(GL_POINTS)
-                glVertex2f(enemy_map_x, enemy_map_y)
+                glVertex3f(enemy_map_x, enemy_map_y, 0)
                 glEnd()
     
     glPopMatrix()
@@ -1828,10 +1822,10 @@ def draw_level_ui():
         
         glColor3f(0.0, 0.0, 0.0)
         glBegin(GL_QUADS)
-        glVertex2f(0, 0)
-        glVertex2f(WINDOW_WIDTH, 0)
-        glVertex2f(WINDOW_WIDTH, WINDOW_HEIGHT)
-        glVertex2f(0, WINDOW_HEIGHT)
+        glVertex3f(0, 0, 0)  
+        glVertex3f(WINDOW_WIDTH, 0, 0)  
+        glVertex3f(WINDOW_WIDTH, WINDOW_HEIGHT, 0)  
+        glVertex3f(0, WINDOW_HEIGHT, 0)  
         glEnd()
         
         glPopMatrix()
@@ -2093,6 +2087,7 @@ def display():
               GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
     
     glutSwapBuffers()
+    
 def reset_game():
     global player_pos, player_angle, player_health, player_score, is_dead, game_paused
     global falling_diamonds, ground_diamonds, bullets, enemies, dash_mode, dash_timer, dash_cooldown
