@@ -297,7 +297,7 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
     dy = target_pos[1] - player_pos[1]
     dist = math.sqrt(dx*dx + dy*dy)
     
-    if dist > 10:
+    if dist > 100:
         target_angle = math.degrees(math.atan2(dx, dy))
         angle_diff = normalize_angle(target_angle - player_angle)
         if angle_diff > 180:
@@ -320,24 +320,24 @@ def cheat_move_towards(target_pos, speed_multiplier=1.0):
         player_pos[1] += move_speed * math.cos(math.radians(player_angle))
         
         if check_boundary_collision(player_pos):
+            
             if player_pos[0] > BOUNDARY_SIZE:
                 player_pos[0] = BOUNDARY_SIZE - 200
                 player_angle += 180 
-                player_angle = normalize_angle(player_angle) 
                 
             elif player_pos[0] < -BOUNDARY_SIZE:
                 player_pos[0] = -BOUNDARY_SIZE + 200
                 player_angle += 180 
-                player_angle = normalize_angle(player_angle) 
-            
+               
             if player_pos[1] > BOUNDARY_SIZE:
                 player_pos[1] = BOUNDARY_SIZE - 200
                 player_angle += 180 
-                player_angle = normalize_angle(player_angle) 
+       
             elif player_pos[1] < -BOUNDARY_SIZE:
                 player_pos[1] = -BOUNDARY_SIZE + 200
                 player_angle += 180 
-                player_angle = normalize_angle(player_angle) 
+            
+            player_angle = normalize_angle(player_angle) 
             
              
             
@@ -383,13 +383,11 @@ def update_cheat_mode():
     if cheat_target_enemy and cheat_target_enemy.alive:
         enemy_reached = cheat_move_towards(cheat_target_enemy.pos, speed_multiplier=2)
         cheat_auto_shoot()
-        
-        if distance_2d(player_pos, cheat_target_enemy.pos) < 300:
-            shoot_fire_gun()
+        shoot_fire_gun()
 
 # ==================== LEVEL MANAGEMENT ==================== YASIN
 def spawn_golden_keys():
-    """Spawn 3 golden keys at random locations on the map"""
+
     global golden_keys
     
     golden_keys.clear()
@@ -1227,7 +1225,7 @@ def draw_boundary_walls():
 
 
 def draw_sky():
-    """Draw complete sky background covering entire viewport"""
+    
     sky_distance = BOUNDARY_SIZE * 3
     
     glDisable(GL_DEPTH_TEST)
@@ -1476,7 +1474,7 @@ def update_enemies():
             bounce_from_boundary(enemy.pos)
  
 def update_bullets():
-    """FIXED: Cannon (type 2) now deals 5 damage - one-shots all enemies!"""
+    
     global player_score, enemies_killed_this_level
     
     if game_paused:
@@ -1509,10 +1507,10 @@ def update_bullets():
             bullet.alive = False
             continue
         
-        # FIXED: Use bullet.damage instead of hardcoded 1
+
         for enemy in enemies:
             if enemy.alive and distance_2d(bullet.pos, enemy.pos) < (bullet.radius + enemy.radius):
-                enemy.health -= bullet.damage  # Pistol deals 1, Cannon deals 5
+                enemy.health -= bullet.damage  # Pistol deals 1, Cannon deals 3
                 enemy.damage_timer = enemy.damage_duration
                 
                 if enemy.health <= 0:
@@ -1602,7 +1600,6 @@ def check_enemy_collisions():
     for enemy in enemies:
         if enemy.alive and distance_2d(player_pos, enemy.pos) < 60:
             player_health -= 1
-            
             dx = player_pos[0] - enemy.pos[0]
             dy = player_pos[1] - enemy.pos[1]
             dist = math.sqrt(dx*dx + dy*dy)
@@ -2069,7 +2066,7 @@ def display():
         draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 100, "CHEAT MODE ACTIVE!", 
                   GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
         if cheat_target_enemy:
-            draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 130, "KILLING ENEMIES ONLY...", 
+            draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 130, "KILLING ENEMIES.....", 
                       GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 0.0))
         else:
             draw_text(WINDOW_WIDTH//2 - 120, WINDOW_HEIGHT - 130, "All Enemies Killed!", 
@@ -2081,7 +2078,7 @@ def display():
                   GLUT_BITMAP_HELVETICA_18, (0.5, 1.0, 1.0))
     
     if fire_gun_active:
-        draw_text(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 150, "CANNON FIRING! (5 DAMAGE - ONE-SHOT!)", 
+        draw_text(WINDOW_WIDTH//2 - 150, WINDOW_HEIGHT - 150, "!!!FIRING CANNNON!!!!", 
                   GLUT_BITMAP_HELVETICA_18, (1.0, 0.3, 0.0))
     
     if is_dead:
@@ -2098,13 +2095,13 @@ def display():
         draw_text(WINDOW_WIDTH//2 - 80, WINDOW_HEIGHT//2, "PAUSED", 
                   GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.0))
     
-    draw_text(20, 150, "OBJECTIVE: Collect all 3 Golden Keys to advance!", 
+    draw_text(20, 150, "OBJECTIVE: Collect all 3 Golden Keys to advance to the next level!", 
               GLUT_BITMAP_HELVETICA_18, (1.0, 0.84, 0.0))
-    draw_text(20, 120, "CONTROLS: LEFT CLICK=Pistol(1dmg), F=Cannon(5dmg-ONESHOT!), W/A/S/D=Move, Q/E=Rotate, Tab=Dash, C=Camera", 
+    draw_text(20, 120, "CONTROLS: LEFT CLICK=Pistol(1dmg), F=Cannon(3dmg-ONESHOT!), W/A/S/D=Move, Q/E=Rotate, Tab=Dash, C=Camera", 
               GLUT_BITMAP_HELVETICA_18, (1.0, 1.0, 0.3))
     draw_text(20, 90, "SPACE=Pause, X=CHEAT (Kills Enemies Only), R=Reset", 
               GLUT_BITMAP_HELVETICA_18, (0.3, 1.0, 1.0))
-    draw_text(20, 60, "CHEAT MODE: Auto-kills all enemies, stays in bounds!", 
+    draw_text(20, 60, "CHEAT MODE: Auto-kills all enemies around you!", 
               GLUT_BITMAP_HELVETICA_18, (1.0, 0.0, 1.0))
     
     glutSwapBuffers()
